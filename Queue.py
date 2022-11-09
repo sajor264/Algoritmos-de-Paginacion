@@ -16,3 +16,6 @@ class Queue:
 
     def clear(self):
         self.items = []
+    
+    def setQueue(self, items):
+        self.items = items
