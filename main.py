@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Queue import Queue
 from Optimal import Optimal
+from  Lru import Lru
+from SecondChance import SecondChance
+from Aging import Aging
+from Random import Random
 from matplotlib.lines import Line2D
 
 # KEY: PID, VALUE: PROCESS POINTERS
@@ -15,14 +19,14 @@ pointersDic = {}
 #ORDEN DE LAS LLAMADAS A MEMORIA
 memCalls = Queue()
 
-colors=[]
-for i in range(100):
-    r = lambda: random.randint(15,255)
-    color='#%02X%02X%02X' % (r(),r(),r())
-    while color in colors:
-        color='#%02X%02X%02X' % (r(),r(),r())
-    colors.append(color)
-colors.append('#%02X%02X%02X' % (0,0,0))
+# colors=[]
+# for i in range(100):
+#     r = lambda: random.randint(15,255)
+#     color='#%02X%02X%02X' % (r(),r(),r())
+#     while color in colors:
+#         color='#%02X%02X%02X' % (r(),r(),r())
+#     colors.append(color)
+# colors.append('#%02X%02X%02X' % (0,0,0))
 
 # def draw(choice):
 #     if(choice != 2):
@@ -93,20 +97,22 @@ def createProcesses(allProcesses):
         else:
             processesDic[process[0]] = [process[1]]
 
+    tempMemCalls.extend(random.choices(tempMemCalls, k=random.randint(int(len(tempMemCalls)/4), len(tempMemCalls))))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
 
-def killProcess(PID):
-    for values in processesDic[PID]:
-        del pointersDic[values]
-    del processesDic[PID]
-
-
-def finishProcesses():
-    processesDic.clear()
-    pointersDic.clear()
-    memCalls.clear()
+def killProcess(ptr):
+    del pointersDic[ptr]
+    key = [i for i in processesDic if ptr in processesDic[i]]
+    key = key[0]
+    tempList = processesDic[key]
+    if len(processesDic[key]) == 1:
+        del processesDic[key]
+    else:
+        tempList = processesDic[key]
+        tempList.remove(ptr)
+        processesDic[key] = tempList
 
 
 if __name__ == '__main__':
@@ -118,9 +124,14 @@ if __name__ == '__main__':
     # VARIABLES
     random.seed(seed)
     finished = False
-    allProcesses  = readFile(fileName)
+    optimalAlg = Optimal(memCalls) 
+    lruAlg = Lru() 
+    secondChanceAlg = SecondChance() 
+    agingAlg = Aging() 
+    randomAlg = Random() 
 
     # OBTIENE LOS PROCESOS Y LOS BARAJA
+    allProcesses  = readFile(fileName)
     createProcesses(allProcesses)
 
    
@@ -147,18 +158,25 @@ if __name__ == '__main__':
     # plt.get_current_fig_manager().full_screen_toggle() 
 
     while(not finished):
-        Optimal = Optimal(memCalls) 
-        currentProcess = memCalls.pop()
+        currentPointer = memCalls.pop()
+
+        #EJECUTAMOS ALGORITMOS
+        optimalAlg.allocateNext()
+        if algorithm == 0:
+            lruAlg.allocate(currentPointer)
+        if algorithm == 1:
+            secondChanceAlg.allocate(currentPointer)
+        if algorithm == 2:
+            agingAlg.allocate(currentPointer)
+        if algorithm == 3:
+            randomAlg.allocate(currentPointer)
 
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
-        if(time.time() - dicProcessesTimes[currentProcess] >= dicProcesses[currentProcess].getExecTime()):
-            killProcess(currentProcess)
-        else:
-            processQueue.queue(currentProcess)
+        if(not memCalls.isIn(currentPointer)):
+            killProcess(currentPointer)
         
         # VERIFICA SI TERMINARON TODOS LOS PROCESOS
-        if(not memCalls):
-            finishProcesses()
+        if(memCalls.isEmpty()):
             finished = True
     
         # draw(choice)

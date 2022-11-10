@@ -1,41 +1,40 @@
 from Mmu import Mmu
 from Ram import Ram
 
-class Optimal:
+class Lru:
 
-    def __init__(self, memCalls):
-        self.setMemCalls(memCalls)
+    def __init__(self):
         self.setMmu(Mmu())
         self.setRam(Ram())
+        self.setMemoryAccesses([])
     
     # GETTERS
-    def getMemCalls(self):
-        return self.__memCalls
-
     def getMmu(self):
         return self.__mmu
 
     def getRam(self):
         return self.__ram
+    
+    def getMemoryAccesses(self):
+        return self.__memoryAccesses
 
 
     # SETTERS
-    def setMemCalls(self, memCalls):
-        self.__memCalls = memCalls
-
     def setMmu(self, mmu):
         self.__mmu = mmu
 
     def setRam(self, ram):
         self.__ram = ram
 
+    def setMemoryAccesses(self, memoryAccesses):
+        self.__memoryAccesses = memoryAccesses
+
 
     # FUNCTIONS
-    def getNextMemCall(self):
-        tempQueue = self.getMemCalls()
-        element = tempQueue.pop()
-        self.setMemCalls(tempQueue)
-        return element
+    def addMemoryAccess(self, page):
+        tempMem = self.getMemoryAccesses()
+        tempMem.append(page)
+        self.setMemoryAccesses(tempMem)
 
     def removeFromRam(self, page):
         self.getRam().removePage(page)
@@ -43,17 +42,19 @@ class Optimal:
     def allocateInRam(self, page):
         self.getRam().allocatePage(page)
 
-    def allocateNext(self):
+    def allocate(self, newPage):
         if self.getRam().isFull():
-            restOfMemCalls = self.getMemCalls().getQueue()
+            memoryAccesses = list(reversed(self.getMemoryAccesses()))
             page2Remove = self.getRam().getMemory()[0]
-            index = restOfMemCalls.index(page2Remove)
+            index = memoryAccesses.index(page2Remove)
             marked = [page2Remove, index]
             for page2Remove in self.getRam().getMemory():
-                index = restOfMemCalls.index(page2Remove)
+                index = memoryAccesses.index(page2Remove)
                 if index > marked[1]:
                     marked = [page2Remove, index]
             self.removeFromRam(marked[0])
-            self.allocateInRam(self.getNextMemCall())
+            self.allocateInRam(newPage)
+            self.addMemoryAccess(newPage)
         else:
-            self.allocateInRam(self.getNextMemCall())
+            self.allocateInRam(newPage)
+            self.addMemoryAccess(newPage)

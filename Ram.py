@@ -27,17 +27,15 @@ class Ram:
     def allocatePage(self, page):
         tempFreeRam = self.getFreeRam()
         tempMem = self.getMemory()
-        tempFreeRam -= page[1]
+        tempFreeRam -= 4
         tempMem.append(page)
-
         self.setFreeRam(tempFreeRam)
         self.setMemory(tempMem)
     
     def removePage(self, page):
         tempFreeRam = self.getFreeRam()
         tempMem = self.getMemory()
-        tempFreeRam += page[1]
+        tempFreeRam += 4
         tempMem.remove(page)
-
         self.setFreeRam(tempFreeRam)
         self.setMemory(tempMem)
