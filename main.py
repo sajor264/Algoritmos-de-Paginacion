@@ -118,8 +118,8 @@ def killProcess(ptr):
 if __name__ == '__main__':
     # INPUTS
     fileName = str(input("Nombre del archivo de procesos: "))
-    seed = str(input("Semilla: "))
-    algorithm = str(input("0) LRU\n1) Second Chance\n2) Aging\n3)Random\nAlgoritmo: "))
+    seed = int(input("Semilla: "))
+    algorithm = int(input("0) LRU\n1) Second Chance\n2) Aging\n3)Random\nAlgoritmo: "))
 
     # OBTIENE LOS PROCESOS Y LOS BARAJA
     allProcesses  = readFile(fileName)
@@ -167,10 +167,15 @@ if __name__ == '__main__':
 
         #EJECUTAMOS ALGORITMOS
         mmuOpt.execute()
-        #mmuAlg.execute(currentPointer, pointersDic[currentPointer])
+        mmuAlg.execute(currentPointer, pointersDic[currentPointer])
 
         print(mmuOpt.getAlgorithm().getRam().getMemory())
         print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        print("------------------------------------------------------")
+        print(mmuAlg.getAlgorithm().getRam().getMemory())
+        print(mmuAlg.getAlgorithm().getDisk().getMemory())
+        print("------------------------------------------------------")
+        print("------------------------------------------------------")
         print("------------------------------------------------------")
 
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
@@ -182,6 +187,7 @@ if __name__ == '__main__':
             finished = True
     
         # draw(choice)
+        time.sleep(1)
         
     # plt.show()
     print("FINISHED")

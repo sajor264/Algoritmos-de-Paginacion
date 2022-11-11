@@ -53,20 +53,20 @@ class Optimal:
 
     def allocateNext(self):
         for page in self.getNextMemCall():
-            if self.getRam().isFull():
-                if page not in self.getRam().getMemory():
-                    restOfMemCalls = self.getMemCalls().getQueue()
-                    index = -1
-                    marked = [-1, index]
-                    for page2Remove in self.getRam().getMemory():
-                        index = [restOfMemCalls.index(page) for page in restOfMemCalls if page2Remove in page][0]
-                        if index > marked[1]:
-                            marked = [page2Remove, index]
-                    self.removeFromRam(marked[0])
-                    if(page in self.getDisk().getMemory()):
-                        # fallo de pagina
-                        time.sleep(5)
-                    self.allocateInRam(page)
-                    self.allocateInDisk(marked[0])
+            if self.getRam().isFull() and page not in self.getRam().getMemory():
+                restOfMemCalls = self.getMemCalls().getQueue()
+                index = -1
+                marked = [-1, index]
+                for page2Remove in self.getRam().getMemory():
+                    index = [restOfMemCalls.index(page) for page in restOfMemCalls if page2Remove in page][0]
+                    if index > marked[1]:
+                        marked = [page2Remove, index]
+                self.removeFromRam(marked[0])
+                # fallo de pagina
+                if(page in self.getDisk().getMemory()):
+                    self.removeFromDisk(page)
+                    time.sleep(5)
+                self.allocateInRam(page)
+                self.allocateInDisk(marked[0])
             elif page not in self.getRam().getMemory():
                 self.allocateInRam(page)

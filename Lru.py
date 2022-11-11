@@ -1,5 +1,6 @@
 from Ram import Ram
 from Disk import Disk
+import time
 
 class Lru:
 
@@ -42,9 +43,14 @@ class Lru:
     def allocateInRam(self, page):
         self.getRam().allocatePage(page)
 
-    def allocate(self, newPage):
+    def removeFromDisk(self, page):
+        self.getDisk().removePage(page)
 
-        if self.getRam().isFull():
+    def allocateInDisk(self, page):
+        self.getDisk().allocatePage(page)
+
+    def allocate(self, newPage):
+        if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             memoryAccesses = list(reversed(self.getMemoryAccesses()))
             page2Remove = self.getRam().getMemory()[0]
             index = memoryAccesses.index(page2Remove)
@@ -54,8 +60,12 @@ class Lru:
                 if index > marked[1]:
                     marked = [page2Remove, index]
             self.removeFromRam(marked[0])
+            if(newPage in self.getDisk().getMemory()):
+                self.removeFromDisk(newPage)
+                time.sleep(5)
             self.allocateInRam(newPage)
+            self.allocateInDisk(page2Remove)
             self.addMemoryAccess(newPage)
-        else:
+        elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.addMemoryAccess(newPage)
