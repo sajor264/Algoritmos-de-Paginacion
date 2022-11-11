@@ -3,12 +3,14 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from Queue import Queue
+from matplotlib.lines import Line2D
+from MmuAlg import MmuAlg
+from MmuOpt import MmuOpt
 from Optimal import Optimal
-from  Lru import Lru
-from SecondChance import SecondChance
+from Lru import Lru
 from Aging import Aging
 from Random import Random
-from matplotlib.lines import Line2D
+from SecondChance import SecondChance
 
 # KEY: PID, VALUE: PROCESS POINTERS
 processesDic = {}
@@ -86,7 +88,6 @@ def readFile(fileName):
 
 def createProcesses(allProcesses):
     tempMemCalls = []
-
     for process in allProcesses:
         pointersDic[str(process[1])] = int(process[2])
         tempMemCalls.append(process[1])
@@ -96,8 +97,7 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-
-    tempMemCalls.extend(random.choices(tempMemCalls, k=random.randint(int(len(tempMemCalls)/4), len(tempMemCalls))))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*100))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
@@ -121,19 +121,24 @@ if __name__ == '__main__':
     seed = str(input("Semilla: "))
     algorithm = str(input("0) LRU\n1) Second Chance\n2) Aging\n3)Random\nAlgoritmo: "))
 
-    # VARIABLES
-    random.seed(seed)
-    finished = False
-    optimalAlg = Optimal(memCalls) 
-    lruAlg = Lru() 
-    secondChanceAlg = SecondChance() 
-    agingAlg = Aging() 
-    randomAlg = Random() 
-
     # OBTIENE LOS PROCESOS Y LOS BARAJA
     allProcesses  = readFile(fileName)
     createProcesses(allProcesses)
 
+    # VARIABLES
+    random.seed(seed)
+    finished = False
+    memCallsCpy = Queue()
+    memCallsCpy.setQueue(list(reversed(memCalls.getQueue())).copy())
+    mmuOpt = MmuOpt(memCallsCpy, pointersDic)
+    if algorithm == 0:
+        mmuAlg = MmuAlg(Lru())
+    if algorithm == 1:
+        mmuAlg = MmuAlg(SecondChance())
+    if algorithm == 2:
+        mmuAlg = MmuAlg(Aging())
+    if algorithm == 3:
+        mmuAlg = MmuAlg(Random())
    
     # custom_lines1 = [Line2D([0], [0], color=colors[x], lw=4) for x in range(25)]
     # custom_lines2 = [Line2D([0], [0], color=colors[x], lw=4) for x in range(25,50)]
@@ -161,15 +166,12 @@ if __name__ == '__main__':
         currentPointer = memCalls.pop()
 
         #EJECUTAMOS ALGORITMOS
-        optimalAlg.allocateNext()
-        if algorithm == 0:
-            lruAlg.allocate(currentPointer)
-        if algorithm == 1:
-            secondChanceAlg.allocate(currentPointer)
-        if algorithm == 2:
-            agingAlg.allocate(currentPointer)
-        if algorithm == 3:
-            randomAlg.allocate(currentPointer)
+        mmuOpt.execute()
+        #mmuAlg.execute(currentPointer, pointersDic[currentPointer])
+
+        print(mmuOpt.getAlgorithm().getRam().getMemory())
+        print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        print("------------------------------------------------------")
 
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
         if(not memCalls.isIn(currentPointer)):
