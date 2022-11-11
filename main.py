@@ -169,11 +169,13 @@ if __name__ == '__main__':
         mmuOpt.execute()
         mmuAlg.execute(currentPointer, pointersDic[currentPointer])
 
-        print(mmuOpt.getAlgorithm().getRam().getMemory())
+        #print(mmuOpt.getAlgorithm().getRam().getMemory())
         print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        print(len(mmuOpt.getAlgorithm().getDisk().getMemory()))
         print("------------------------------------------------------")
-        print(mmuAlg.getAlgorithm().getRam().getMemory())
+        #print(mmuAlg.getAlgorithm().getRam().getMemory())
         print(mmuAlg.getAlgorithm().getDisk().getMemory())
+        print(len(mmuAlg.getAlgorithm().getDisk().getMemory()))
         print("------------------------------------------------------")
         print("------------------------------------------------------")
         print("------------------------------------------------------")
@@ -187,7 +189,7 @@ if __name__ == '__main__':
             finished = True
     
         # draw(choice)
-        time.sleep(1)
+        time.sleep(0.2)
         
     # plt.show()
     print("FINISHED")
