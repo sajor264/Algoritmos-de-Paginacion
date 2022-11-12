@@ -8,6 +8,7 @@ class Random:
     def __init__(self):
         self.setRam(Ram())
         self.setDisk(Disk())
+        self.setExecTime(0)
     
     # GETTERS
     def getRam(self):
@@ -16,6 +17,9 @@ class Random:
     def getDisk(self):
         return self.__disk
 
+    def getExecTime(self):
+        return self.__execTime
+
 
     # SETTERS
     def setRam(self, ram):
@@ -23,6 +27,9 @@ class Random:
 
     def setDisk(self, disk):
         self.__disk = disk
+
+    def setExecTime(self, execTime):
+        self.__execTime = execTime
 
 
     # FUNCTIONS
@@ -38,7 +45,13 @@ class Random:
     def allocateInDisk(self, page):
         self.getDisk().allocatePage(page)
 
+    def addExecTime(self, time):
+        tempExecTime = self.getExecTime()
+        tempExecTime += time
+        self.setExecTime(tempExecTime)
+
     def allocate(self, newPage):
+        self.addExecTime(1)
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
@@ -53,5 +66,7 @@ class Random:
                     #time.sleep(5)
                 self.allocateInRam(newPage)
                 self.allocateInDisk(page2Remove)
+            self.addExecTime(5)
         elif newPage not in self.getRam().getMemory():
                 self.allocateInRam(newPage)
+                self.addExecTime(5)

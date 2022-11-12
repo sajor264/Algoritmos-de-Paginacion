@@ -85,6 +85,5 @@ class MmuAlg:
         pagesList  = self.getPages(ptr, bytesSize)
         for page in pagesList:
             self.getAlgorithm().allocate(page)
-
     
 

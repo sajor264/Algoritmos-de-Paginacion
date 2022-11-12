@@ -121,16 +121,18 @@ if __name__ == '__main__':
             finished = True
 
         print("\n\n\n")
+        print(mmuOpt.getAlgorithm().getExecTime())
+        print(mmuAlg.getAlgorithm().getExecTime())
         # print(mmuOpt.getAlgorithm().getMemCalls().getQueue())
         # print(mmuAlg.getAlgorithm().getRam().getFreeRam())
-        print(len(mmuOpt.getAlgorithm().getDisk().getMemory()))
-        print("------------------------------OPTIMO------------------------------")
-        print(mmuOpt.getAlgorithm().getRam().getMemory())
-        print(mmuOpt.getAlgorithm().getDisk().getMemory())
-        print("-----------------------------ALGORITMO-----------------------------")
-        print(mmuAlg.getAlgorithm().getRam().getMemory())
-        print(mmuAlg.getAlgorithm().getDisk().getMemory())
+        # print(len(mmuOpt.getAlgorithm().getDisk().getMemory()))
+        # print("------------------------------OPTIMO------------------------------")
+        # print(mmuOpt.getAlgorithm().getRam().getMemory())
+        # print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        # print("-----------------------------ALGORITMO-----------------------------")
+        # print(mmuAlg.getAlgorithm().getRam().getMemory())
+        # print(mmuAlg.getAlgorithm().getDisk().getMemory())
     
-        time.sleep(0.00001)
+        #time.sleep(0.1)
         
     print("FINISHED")

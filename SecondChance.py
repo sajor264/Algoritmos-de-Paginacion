@@ -10,6 +10,7 @@ class SecondChance:
         self.setDisk(Disk())
         self.setClock({})
         self.setVictim(0)
+        self.setExecTime(0)
     
     # GETTERS
     def getRam(self):
@@ -24,6 +25,9 @@ class SecondChance:
     def getVictim(self):
         return self.__victim
 
+    def getExecTime(self):
+        return self.__execTime
+
 
     # SETTERS
     def setRam(self, ram):
@@ -37,6 +41,9 @@ class SecondChance:
 
     def setVictim(self, victim):
         self.__victim = victim
+
+    def setExecTime(self, execTime):
+        self.__execTime = execTime
 
 
     # FUNCTIONS
@@ -57,7 +64,13 @@ class SecondChance:
         tempClock[key] = value
         self.setClock(tempClock)
 
+    def addExecTime(self, time):
+        tempExecTime = self.getExecTime()
+        tempExecTime += time
+        self.setExecTime(tempExecTime)
+
     def allocate(self, newPage):
+        self.addExecTime(1)
         if self.getRam().isFull():
             if newPage not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
@@ -88,8 +101,10 @@ class SecondChance:
                         #time.sleep(5)
                     self.allocateInRam(newPage)
                     self.allocateInDisk(page2Remove)
+                self.addExecTime(5)
             else:
                 self.updateClock(newPage, 1)
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.updateClock(newPage, 1)
+            self.addExecTime(5)

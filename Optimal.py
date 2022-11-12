@@ -8,6 +8,7 @@ class Optimal:
         self.setMemCalls(memCalls)
         self.setRam(Ram())
         self.setDisk(Disk())
+        self.setExecTime(0)
 
     
     # GETTERS
@@ -20,6 +21,9 @@ class Optimal:
     def getDisk(self):
         return self.__disk
 
+    def getExecTime(self):
+        return self.__execTime
+
 
     # SETTERS
     def setMemCalls(self, memCalls):
@@ -30,6 +34,9 @@ class Optimal:
 
     def setDisk(self, disk):
         self.__disk = disk
+
+    def setExecTime(self, execTime):
+        self.__execTime = execTime
 
 
     # FUNCTIONS
@@ -51,8 +58,14 @@ class Optimal:
     def allocateInDisk(self, page):
         self.getDisk().allocatePage(page)
 
+    def addExecTime(self, time):
+        tempExecTime = self.getExecTime()
+        tempExecTime += time
+        self.setExecTime(tempExecTime)
+
     def allocateNext(self):
         for page in self.getNextMemCall():
+            self.addExecTime(1)
             if self.getRam().isFull() and page not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
                     if(page in self.getDisk().getMemory()):
@@ -80,5 +93,8 @@ class Optimal:
                         #time.sleep(5)
                     self.allocateInRam(page)
                     self.allocateInDisk(marked[0])
+                self.addExecTime(5)
             elif page not in self.getRam().getMemory():
                 self.allocateInRam(page)
+                self.addExecTime(5)
+            
