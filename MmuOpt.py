@@ -61,6 +61,16 @@ class MmuOpt:
                     self.getAlgorithm().getRam().removePage(page)
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
+            self.removeFromTable(pointer)
+
+    def finish(self):
+        tempRam = self.getAlgorithm().getRam().getMemory()
+        tempTable = self.getTable()
+        for page in tempRam:
+            page = 0
+        self.getAlgorithm().getRam().setMemory(tempRam)
+        self.getAlgorithm().getDisk().setMemory([])
+        self.setTable(tempTable)
 
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():

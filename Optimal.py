@@ -54,26 +54,31 @@ class Optimal:
     def allocateNext(self):
         for page in self.getNextMemCall():
             if self.getRam().isFull() and page not in self.getRam().getMemory():
-                restOfMemCalls = self.getMemCalls().getQueue()
-                index = -1
-                marked = [-1, index]
-                for page2Remove in self.getRam().getMemory():
-                    found = False
-                    for restPage in restOfMemCalls:
-                        if page2Remove in restPage:
-                            index = restOfMemCalls.index(restPage)
-                            found = True
-                    if index > marked[1]:
-                        marked = [page2Remove, index]
-                    if not found:
-                        marked = [page2Remove, index]
-                        break
-                self.removeFromRam(marked[0])
-                # fallo de pagina
-                if(page in self.getDisk().getMemory()):
-                    self.removeFromDisk(page)
-                    #time.sleep(5)
-                self.allocateInRam(page)
-                self.allocateInDisk(marked[0])
+                if 0 in self.getRam().getMemory():
+                    if(page in self.getDisk().getMemory()):
+                        self.removeFromDisk(page)
+                        #time.sleep(5)
+                    self.allocateInRam(page)
+                else:
+                    restOfMemCalls = self.getMemCalls().getQueue()
+                    index = -1
+                    marked = [-1, index]
+                    for page2Remove in self.getRam().getMemory():
+                        found = False
+                        for restPage in restOfMemCalls:
+                            if page2Remove in restPage:
+                                index = restOfMemCalls.index(restPage)
+                                found = True
+                        if index > marked[1]:
+                            marked = [page2Remove, index]
+                        if not found:
+                            marked = [page2Remove, index]
+                            break
+                    self.removeFromRam(marked[0])
+                    if(page in self.getDisk().getMemory()):
+                        self.removeFromDisk(page)
+                        #time.sleep(5)
+                    self.allocateInRam(page)
+                    self.allocateInDisk(marked[0])
             elif page not in self.getRam().getMemory():
                 self.allocateInRam(page)

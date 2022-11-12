@@ -51,21 +51,27 @@ class Lru:
 
     def allocate(self, newPage):
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
-            memoryAccesses = list(reversed(self.getMemoryAccesses()))
-            page2Remove = self.getRam().getMemory()[0]
-            index = memoryAccesses.index(page2Remove)
-            marked = [page2Remove, index]
-            for page2Remove in self.getRam().getMemory():
+            if 0 in self.getRam().getMemory():
+                if(newPage in self.getDisk().getMemory()):
+                    self.removeFromDisk(newPage)
+                    #time.sleep(5)
+                self.allocateInRam(newPage)
+            else:
+                memoryAccesses = list(reversed(self.getMemoryAccesses()))
+                page2Remove = self.getRam().getMemory()[0]
                 index = memoryAccesses.index(page2Remove)
-                if index > marked[1]:
-                    marked = [page2Remove, index]
-            self.removeFromRam(marked[0])
-            if(newPage in self.getDisk().getMemory()):
-                self.removeFromDisk(newPage)
-                #time.sleep(5)
-            self.allocateInRam(newPage)
-            self.allocateInDisk(marked[0])
-            self.addMemoryAccess(newPage)
+                marked = [page2Remove, index]
+                for page2Remove in self.getRam().getMemory():
+                    index = memoryAccesses.index(page2Remove)
+                    if index > marked[1]:
+                        marked = [page2Remove, index]
+                self.removeFromRam(marked[0])
+                if(newPage in self.getDisk().getMemory()):
+                    self.removeFromDisk(newPage)
+                    #time.sleep(5)
+                self.allocateInRam(newPage)
+                self.allocateInDisk(marked[0])
+                self.addMemoryAccess(newPage)
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.addMemoryAccess(newPage)

@@ -60,29 +60,35 @@ class SecondChance:
     def allocate(self, newPage):
         if self.getRam().isFull():
             if newPage not in self.getRam().getMemory():
-                victim = self.getVictim()
-                replaced = False
-                clock = self.getClock()
-                index = victim
-                while not replaced:
-                    if clock[index][1] == 0:
-                        page2Remove = clock[index][0]
-                        clock[index][0] = newPage
-                        clock[index][1] = 1
-                        replaced = True
-                    else:
-                        clock[index][1] = 0
-                    index += 1
-                    if(index == len(clock)):
-                        index = 0
-                self.setVictim(index)
-                self.setClock(clock)
-                self.removeFromRam(page2Remove)
-                if(newPage in self.getDisk().getMemory()):
-                    self.removeFromDisk(newPage)
-                    #time.sleep(5)
-                self.allocateInRam(newPage)
-                self.allocateInDisk(page2Remove)
+                if 0 in self.getRam().getMemory():
+                    if(newPage in self.getDisk().getMemory()):
+                        self.removeFromDisk(newPage)
+                        #time.sleep(5)
+                    self.allocateInRam(newPage)
+                else:
+                    victim = self.getVictim()
+                    replaced = False
+                    clock = self.getClock()
+                    index = victim
+                    while not replaced:
+                        if clock[index][1] == 0:
+                            page2Remove = clock[index][0]
+                            clock[index][0] = newPage
+                            clock[index][1] = 1
+                            replaced = True
+                        else:
+                            clock[index][1] = 0
+                        index += 1
+                        if(index == len(clock)):
+                            index = 0
+                    self.setVictim(index)
+                    self.setClock(clock)
+                    self.removeFromRam(page2Remove)
+                    if(newPage in self.getDisk().getMemory()):
+                        self.removeFromDisk(newPage)
+                        #time.sleep(5)
+                    self.allocateInRam(newPage)
+                    self.allocateInDisk(page2Remove)
             else:
                 changed = False
                 clock = self.getClock()

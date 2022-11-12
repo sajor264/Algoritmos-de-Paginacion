@@ -118,6 +118,14 @@ def killProcess(ptr, mmuOpt, mmuAlg):
         tempList.remove(ptr)
         processes2Remove[key] = tempList
 
+def finish(mmuOpt, mmuAlg):
+    processesDic.clear()
+    processes2Remove.clear()
+    pointersDic.clear()
+    mmuAlg.finish()
+    mmuOpt.finish()
+
+
 
 
 if __name__ == '__main__':
@@ -175,24 +183,27 @@ if __name__ == '__main__':
         mmuOpt.execute()
         mmuAlg.execute(currentPointer, pointersDic[currentPointer])
 
-        print("\n\n\n")
-        print("------------------------------OPTIMO------------------------------")
-        print(mmuOpt.getAlgorithm().getRam().getMemory())
-        print(mmuOpt.getAlgorithm().getDisk().getMemory())
-        print("-----------------------------ALGORITMO-----------------------------")
-        print(mmuAlg.getAlgorithm().getRam().getMemory())
-        print(mmuAlg.getAlgorithm().getDisk().getMemory())
-
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
         if(not memCalls.isIn(currentPointer)):
             killProcess(currentPointer, mmuOpt, mmuAlg)
         
         # VERIFICA SI TERMINARON TODOS LOS PROCESOS
         if(memCalls.isEmpty()):
+            finish(mmuOpt, mmuAlg)
             finished = True
+
+        print("\n\n\n")
+        print(mmuOpt.getAlgorithm().getMemCalls().getQueue())
+        #print(mmuAlg.getAlgorithm().getRam().getFreeRam())
+        print("------------------------------OPTIMO------------------------------")
+        print(mmuOpt.getAlgorithm().getRam().getMemory())
+        print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        print("-----------------------------ALGORITMO-----------------------------")
+        print(mmuAlg.getAlgorithm().getRam().getMemory())
+        print(mmuAlg.getAlgorithm().getDisk().getMemory())
     
         # draw(choice)
-        # time.sleep(0.2)
+        # time.sleep(2)
         
     # plt.show()
     print("FINISHED")
