@@ -2,12 +2,12 @@ from Optimal import Optimal
 from Queue import Queue
 
 class MmuOpt:
-
     def __init__(self, memCalls, pointersDic):
         self.setCurrentId(1)
         self.setTable({})
         self.setPointersDic(pointersDic)
         self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
+        self.setState({})
     
     # GETTERS
     def getCurrentId(self):
@@ -15,12 +15,16 @@ class MmuOpt:
 
     def getTable(self):
         return self.__memory
+
+    def getState(self):
+        return self.__datos
     
     def getAlgorithm(self):
         return self.__algorithm  
 
     def getPointersDic(self):
         return self.__pointersDic   
+
 
 
     # SETTERS
@@ -30,11 +34,15 @@ class MmuOpt:
     def setTable(self, memory):
         self.__memory = memory
 
+    def setState(self, data):
+        self.__datos = data
+
     def setAlgorithm(self, algorithm):
         self.__algorithm = algorithm
 
     def setPointersDic(self, pointersDic):
         self.__pointersDic = pointersDic
+
 
 
     # FUNCTIONS
@@ -72,13 +80,26 @@ class MmuOpt:
         self.getAlgorithm().getDisk().setMemory([])
         self.setTable(tempTable)
 
+    def addState(self,key,value):
+         tempDic = self.getState()
+         tempDic[key] = value
+         self.setTable(tempDic)
+
     def getPages(self, ptr, bytesSize):
+        # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
         if ptr not in self.getTable():
             pagesList  = []
             kbSize = bytesSize/1024
-            pagesList.append(self.incrementId())
+            pag = self.incrementId()
+            data = [pag, ptr, False, pag, -1, -1, False]
+            data.append(pag)
+            self.addState(pag, data)
+            pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
+                pag = self.incrementId()
+                data = [pag, ptr, False, pag, -1, -1, False]
+                self.addState(pag, data)
                 pagesList.append(self.incrementId())
                 kbSize -= 4
             self.addInTable(ptr, pagesList)
