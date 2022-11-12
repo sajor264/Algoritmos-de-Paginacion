@@ -34,8 +34,10 @@ class Disk:
     
     def removePage(self, page):
         tempMem = self.getMemory()
-        tempMem.remove(page)
         tempUsedMemory = self.getUsedMemory()
         tempUsedMemory -= 4
+        index = tempMem.index(page)
+        tempMem.remove(page)
+        tempMem.insert(index, 0)
         self.setUsedMemory(tempUsedMemory)
         self.setMemory(tempMem)
