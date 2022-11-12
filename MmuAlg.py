@@ -78,7 +78,16 @@ class MmuAlg:
         tempDic = self.getState()
         tempDic[key] = value
         self.setTable(tempDic)
-
+    
+    def updateStateDisk(self, key, mADDR):
+        tempDic = self.getState()
+        list = tempDic[key]
+        list[2] = False
+        list[4] = -1
+        list[5] = mADDR
+        tempDic[key] = list
+        self.setTable(tempDic)
+         
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():
             pagesList  = []
@@ -100,9 +109,28 @@ class MmuAlg:
             return self.getTable()[ptr]
     
     def execute(self, ptr, bytesSize):
+        # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
+        algoritmo = self.getAlgorithm()
         pagesList  = self.getPages(ptr, bytesSize)
         for page in pagesList:
-            self.getAlgorithm().allocate(page)
+            if page in algoritmo.getRam().getMemory():
+                algoritmo.allocate(page)
+                lAddr = algoritmo.getRam().getMemory().index(page)
+                data = [page, ptr, True, page, lAddr, -1, False]
+                self.addState(page, data)
+            else:
+                algoritmo.allocate(page)
+                lAddr = algoritmo.getRam().getMemory().index(page)
+                data = [page, ptr, True, page, lAddr, -1, False]
+                self.addState(page, data)
+                disk = algoritmo.getDisk().getMemory()
+                if len(disk) != 0:
+                    pos = algoritmo.getDisk().getMemory().index(disk[-1])
+                    self.updateStateDisk(disk[-1], pos)
+           
+            
+        
+      
 
     
 
