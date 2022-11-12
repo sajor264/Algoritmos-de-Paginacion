@@ -1,6 +1,6 @@
 import random
 
-procesos = 100
+procesos = 30
 sizes = ["128", "256", "512", "1024", "2048", "4096", "8192", "16384"]
 ptr = 0
 

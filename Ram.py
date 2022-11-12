@@ -26,16 +26,23 @@ class Ram:
 
     def allocatePage(self, page):
         tempFreeRam = self.getFreeRam()
-        tempMem = self.getMemory()
         tempFreeRam -= 4
-        tempMem.append(page)
         self.setFreeRam(tempFreeRam)
+        tempMem = self.getMemory()
+        if len(tempMem) < 100:
+            tempMem.append(page)
+        else:
+            index = tempMem.index(0)
+            tempMem.remove(0)
+            tempMem.insert(index, page)
         self.setMemory(tempMem)
     
     def removePage(self, page):
         tempFreeRam = self.getFreeRam()
         tempMem = self.getMemory()
         tempFreeRam += 4
+        index = tempMem.index(page)
         tempMem.remove(page)
+        tempMem.insert(index, 0)
         self.setFreeRam(tempFreeRam)
         self.setMemory(tempMem)

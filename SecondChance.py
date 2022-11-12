@@ -80,7 +80,7 @@ class SecondChance:
                 self.removeFromRam(page2Remove)
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                    time.sleep(5)
+                    #time.sleep(5)
                 self.allocateInRam(newPage)
                 self.allocateInDisk(page2Remove)
             else:

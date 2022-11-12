@@ -6,7 +6,7 @@ from SecondChance import SecondChance
 class MmuAlg:
 
     def __init__(self, algorithm):
-        self.setCurrentId(0)
+        self.setCurrentId(1)
         self.setTable({})
         self.setAlgorithm(algorithm)
     
@@ -43,6 +43,19 @@ class MmuAlg:
         tempDic = self.getTable()
         tempDic[key] = value
         self.setTable(tempDic)
+
+    def removeFromTable(self, key):
+        tempDic = self.getTable()
+        del tempDic[key]
+        self.setTable(tempDic)
+
+    def killProcess(self, pointerList):
+        for pointer in pointerList:
+            for page in self.getTable()[pointer]:
+                if page in self.getAlgorithm().getRam().getMemory():
+                    self.getAlgorithm().getRam().removePage(page)
+                if page in self.getAlgorithm().getDisk().getMemory():
+                    self.getAlgorithm().getDisk().removePage(page)
 
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():

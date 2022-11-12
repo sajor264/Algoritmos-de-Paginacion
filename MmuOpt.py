@@ -4,7 +4,7 @@ from Queue import Queue
 class MmuOpt:
 
     def __init__(self, memCalls, pointersDic):
-        self.setCurrentId(0)
+        self.setCurrentId(1)
         self.setTable({})
         self.setPointersDic(pointersDic)
         self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
@@ -48,6 +48,19 @@ class MmuOpt:
         tempDic = self.getTable()
         tempDic[key] = value
         self.setTable(tempDic)
+    
+    def removeFromTable(self, key):
+        tempDic = self.getTable()
+        del tempDic[key]
+        self.setTable(tempDic)
+
+    def killProcess(self, pointerList):
+        for pointer in pointerList:
+            for page in self.getTable()[pointer]:
+                if page in self.getAlgorithm().getRam().getMemory():
+                    self.getAlgorithm().getRam().removePage(page)
+                if page in self.getAlgorithm().getDisk().getMemory():
+                    self.getAlgorithm().getDisk().removePage(page)
 
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():
@@ -73,6 +86,3 @@ class MmuOpt:
 
     def execute(self):
         self.getAlgorithm().allocateNext()
-
-    
-

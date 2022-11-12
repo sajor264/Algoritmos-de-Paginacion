@@ -62,9 +62,9 @@ class Lru:
             self.removeFromRam(marked[0])
             if(newPage in self.getDisk().getMemory()):
                 self.removeFromDisk(newPage)
-                time.sleep(5)
+                #time.sleep(5)
             self.allocateInRam(newPage)
-            self.allocateInDisk(page2Remove)
+            self.allocateInDisk(marked[0])
             self.addMemoryAccess(newPage)
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
