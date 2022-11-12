@@ -16,3 +16,12 @@ class Queue:
 
     def clear(self):
         self.items = []
+    
+    def setQueue(self, items):
+        self.items = items
+    
+    def isIn(self, e):
+        return e in self.items
+
+    def getQueue(self):
+        return list(reversed(self.items))
