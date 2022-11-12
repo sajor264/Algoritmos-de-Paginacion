@@ -19,6 +19,9 @@ class Lru:
     def getMemoryAccesses(self):
         return self.__memoryAccesses
 
+    def getMarked(self):
+        return self.__marked
+
 
     # SETTERS
     def setRam(self, ram):
@@ -29,6 +32,9 @@ class Lru:
 
     def setMemoryAccesses(self, memoryAccesses):
         self.__memoryAccesses = memoryAccesses
+
+    def setMarked(self, marked):
+        self.__marked = marked
 
 
     # FUNCTIONS
@@ -65,6 +71,7 @@ class Lru:
                     index = memoryAccesses.index(page2Remove)
                     if index > marked[1]:
                         marked = [page2Remove, index]
+                self.setMarked(marked[0])
                 self.removeFromRam(marked[0])
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
