@@ -7,6 +7,7 @@ class MmuAlg:
 
     def __init__(self, algorithm):
         self.setCurrentId(1)
+        self.setState({})
         self.setTable({})
         self.setAlgorithm(algorithm)
     
@@ -18,7 +19,10 @@ class MmuAlg:
         return self.__memory
     
     def getAlgorithm(self):
-        return self.__algorithm    
+        return self.__algorithm  
+
+    def getState(self):
+        return self.__state  
 
 
     # SETTERS
@@ -30,6 +34,9 @@ class MmuAlg:
 
     def setAlgorithm(self, algorithm):
         self.__algorithm = algorithm
+    
+    def setState(self, state):
+        self.__state = state
 
 
     # FUNCTIONS
@@ -66,21 +73,32 @@ class MmuAlg:
         self.getAlgorithm().getRam().setMemory(tempRam)
         self.getAlgorithm().getDisk().setMemory([])
         self.setTable(tempTable)
+    
+    def addState(self, key ,value):
+        tempDic = self.getState()
+        tempDic[key] = value
+        self.setTable(tempDic)
 
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():
             pagesList  = []
             kbSize = bytesSize/1024
-            pagesList.append(self.incrementId())
+            pag = self.incrementId()
+            data = [pag, ptr, False, pag, -1, -1, False]
+            self.addState(pag, data)
+            pagesList.append(pag )
             kbSize -= 4
             while(kbSize > 4):
-                pagesList.append(self.incrementId())
+                pag = self.incrementId()
+                data = [pag, ptr, False, pag, -1, -1, False]
+                self.addState(pag, data)
+                pagesList.append(pag)
                 kbSize -= 4
             self.addInTable(ptr, pagesList)
             return pagesList
         else:
             return self.getTable()[ptr]
-
+    
     def execute(self, ptr, bytesSize):
         pagesList  = self.getPages(ptr, bytesSize)
         for page in pagesList:
