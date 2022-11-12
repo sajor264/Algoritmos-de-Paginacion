@@ -6,8 +6,8 @@ class MmuOpt:
         self.setCurrentId(1)
         self.setTable({})
         self.setPointersDic(pointersDic)
-        self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
         self.setState({})
+        self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
     
     # GETTERS
     def getCurrentId(self):
@@ -17,7 +17,7 @@ class MmuOpt:
         return self.__memory
 
     def getState(self):
-        return self.__datos
+        return self.__state
     
     def getAlgorithm(self):
         return self.__algorithm  
@@ -34,8 +34,8 @@ class MmuOpt:
     def setTable(self, memory):
         self.__memory = memory
 
-    def setState(self, data):
-        self.__datos = data
+    def setState(self, state):
+        self.__state = state
 
     def setAlgorithm(self, algorithm):
         self.__algorithm = algorithm
@@ -81,9 +81,9 @@ class MmuOpt:
         self.setTable(tempTable)
 
     def addState(self,key,value):
-         tempDic = self.getState()
-         tempDic[key] = value
-         self.setTable(tempDic)
+        tempDic = self.getState()
+        tempDic[key] = value
+        self.setTable(tempDic)
 
     def getPages(self, ptr, bytesSize):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
