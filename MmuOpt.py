@@ -100,7 +100,7 @@ class MmuOpt:
                 pag = self.incrementId()
                 data = [pag, ptr, False, pag, -1, -1, False]
                 self.addState(pag, data)
-                pagesList.append(self.incrementId())
+                pagesList.append(pag)
                 kbSize -= 4
             self.addInTable(ptr, pagesList)
             return pagesList

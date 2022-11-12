@@ -189,12 +189,12 @@ if __name__ == '__main__':
         
         # VERIFICA SI TERMINARON TODOS LOS PROCESOS
         if(memCalls.isEmpty()):
-            finish(mmuOpt, mmuAlg)
+            # finish(mmuOpt, mmuAlg)
             finished = True
 
         print("\n\n\n")
         print(mmuOpt.getAlgorithm().getMemCalls().getQueue())
-        #print(mmuAlg.getAlgorithm().getRam().getFreeRam())
+        # print(mmuAlg.getAlgorithm().getRam().getFreeRam())
         print("------------------------------OPTIMO------------------------------")
         print(mmuOpt.getAlgorithm().getRam().getMemory())
         print(mmuOpt.getAlgorithm().getDisk().getMemory())
@@ -203,7 +203,7 @@ if __name__ == '__main__':
         print(mmuAlg.getAlgorithm().getDisk().getMemory())
     
         # draw(choice)
-        # time.sleep(2)
+        time.sleep(0.00001)
         
     # plt.show()
     print("FINISHED")
