@@ -8,6 +8,7 @@ class Lru:
         self.setDisk(Disk())
         self.setMemoryAccesses([])
         self.setExecTime(0)
+        self.setMarked(0)
     
     # GETTERS
     def getRam(self):
@@ -70,7 +71,12 @@ class Lru:
         None
     
     def getMarke(self):
-        return {}
+        dic = {}
+        for pag in self.getRam().getMemory():
+            if(self.getMarked() != pag):
+                dic[pag] = 0
+        dic[self.getMarked()]=1
+        return dic
 
     def allocate(self, newPage):
         self.addExecTime(1)
