@@ -22,8 +22,6 @@ class Aging:
     def getExecTime(self):
         return self.__execTime
 
-   
-
     # SETTERS
     def setRam(self, ram):
         self.__ram = ram
@@ -108,6 +106,7 @@ class Aging:
         self.setClock(dic)
     
     def allocate(self, newPage):
+        self.addExecTime(1)
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
@@ -123,11 +122,12 @@ class Aging:
                 self.allocateInRam(newPage)
                 self.addInClock(newPage, "10000000")
                 self.righBits()
-                
+            self.addExecTime(5)       
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.addInClock(newPage, "10000000")
             self.righBits()
+            self.addExecTime(5)
 
         elif newPage  in self.getRam().getMemory():
             self.pagInRam(newPage)
