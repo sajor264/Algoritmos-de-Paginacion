@@ -257,7 +257,7 @@ if __name__ == '__main__':
         #EJECUTAMOS ALGORITMOS
         mmuOpt.execute()
         mmuAlg.execute(currentPointer, pointersDic[currentPointer],getIDP(currentPointer))
-        ramOptColors = [colors[int(mmuOpt.getState().get(x)[1])] for x in mmuOpt.getAlgorithm().getRam().getMemory()]
+        ramOptColors = [colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for x in mmuOpt.getAlgorithm().getRam().getMemory()]
         ramAlgColors = [colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for x in mmuAlg.getAlgorithm().getRam().getMemory()]
 
         #GRAFICA TABLAS DE  RAMs

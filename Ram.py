@@ -2,7 +2,7 @@ class Ram:
 
     def __init__(self):
         self.setFreeRam(400)
-        self.setMemory([])
+        self.setMemory(self.createEmptyRam())
     
     # GETTERS
     def getFreeRam(self):
@@ -21,6 +21,12 @@ class Ram:
 
 
     # FUNCTIONS
+    def createEmptyRam(self):
+        tempList = []
+        for i in range(100):
+            tempList.append(0)
+        return tempList
+
     def isFull(self):
         return self.getFreeRam() <= 0
 
@@ -29,12 +35,9 @@ class Ram:
         tempFreeRam -= 4
         self.setFreeRam(tempFreeRam)
         tempMem = self.getMemory()
-        if len(tempMem) < 100:
-            tempMem.append(page)
-        else:
-            index = tempMem.index(0)
-            tempMem.remove(0)
-            tempMem.insert(index, page)
+        index = tempMem.index(0)
+        tempMem.remove(0)
+        tempMem.insert(index, page)
         self.setMemory(tempMem)
     
     def removePage(self, page):
