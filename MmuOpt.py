@@ -69,6 +69,7 @@ class MmuOpt:
                     self.getAlgorithm().getRam().removePage(page)
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
+                self.rmvState(page)
             self.removeFromTable(pointer)
         self.getAlgorithm().addExecTime(10)
 
@@ -84,7 +85,12 @@ class MmuOpt:
     def addState(self,key,value):
         tempDic = self.getState()
         tempDic[key] = value
-        self.setTable(tempDic)
+        self.setState(tempDic)
+    
+    def rmvState(self, key):
+        tempDic = self.getState()
+        del(tempDic[key])
+        self.setState(tempDic)
 
     def getPages(self, ptr, bytesSize):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
@@ -92,14 +98,14 @@ class MmuOpt:
             pagesList  = []
             kbSize = bytesSize/1024
             pag = self.incrementId()
-            data = [pag, ptr, False, pag, -1, -1, False]
+            data = [pag, ptr, False, -1, -1, -1, False]
             data.append(pag)
             self.addState(pag, data)
             pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
-                data = [pag, ptr, False, pag, -1, -1, False]
+                data = [pag, ptr, False, -1, -1, -1, False]
                 self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
@@ -117,4 +123,7 @@ class MmuOpt:
         return pageCalls
 
     def execute(self):
+        self.getAlgorithm().setData(self.getState())
         self.getAlgorithm().allocateNext()
+        state = self.getAlgorithm().getData()
+        self.setState(state)
