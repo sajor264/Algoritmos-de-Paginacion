@@ -2,11 +2,12 @@ from Optimal import Optimal
 from Queue import Queue
 
 class MmuOpt:
-    def __init__(self, memCalls, pointersDic):
+    def __init__(self, memCalls, pointersDic, process):
         self.setCurrentId(1)
         self.setTable({})
         self.setPointersDic(pointersDic)
         self.setState({})
+        self.setProcess(process)
         self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
     
     # GETTERS
@@ -19,6 +20,9 @@ class MmuOpt:
     def getState(self):
         return self.__state
     
+    def getProcess(self):
+        return self.__process
+
     def getAlgorithm(self):
         return self.__algorithm  
 
@@ -43,7 +47,8 @@ class MmuOpt:
     def setPointersDic(self, pointersDic):
         self.__pointersDic = pointersDic
 
-
+    def setProcess(self, process):
+        self.__process = process
 
     # FUNCTIONS
     def incrementId(self):
@@ -61,6 +66,12 @@ class MmuOpt:
         tempDic = self.getTable()
         del tempDic[key]
         self.setTable(tempDic)
+    
+    def getIDP(self, ptr):
+        for IDP in self.getProcess():
+            if ptr in self.getProcess()[IDP]:
+                return IDP
+        return 0
 
     def killProcess(self, pointerList):
         for pointer in pointerList:
@@ -92,19 +103,19 @@ class MmuOpt:
         del(tempDic[key])
         self.setState(tempDic)
 
-    def getPages(self, ptr, bytesSize):
+    def getPages(self, ptr, bytesSize, pid):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
         if ptr not in self.getTable():
             pagesList  = []
             kbSize = bytesSize/1024
             pag = self.incrementId()
-            data = [pag, ptr, False,pag, -1, -1, -1, False]
+            data = [pag, pid, False,pag, -1, -1, -1, False]
             self.addState(pag, data)
             pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
-                data = [pag, ptr, False,pag, -1, -1, -1, False]
+                data = [pag, pid, False,pag, -1, -1, -1, False]
                 self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
@@ -118,7 +129,7 @@ class MmuOpt:
         queue = memCalls
         while(not queue.isEmpty()):
             pointer  = queue.pop()
-            pageCalls.queue(self.getPages(pointer, self.getPointersDic()[pointer]))
+            pageCalls.queue(self.getPages(pointer, self.getPointersDic()[pointer], self.getIDP(pointer)))
         return pageCalls
 
     def execute(self):

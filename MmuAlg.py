@@ -129,7 +129,7 @@ class MmuAlg:
         else:
             return self.getTable()[ptr]
     
-    def execute(self, ptr, bytesSize):
+    def execute(self, ptr, bytesSize, pid):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
         algoritmo = self.getAlgorithm()
         pagesList  = self.getPages(ptr, bytesSize)
@@ -139,20 +139,20 @@ class MmuAlg:
                 tim = algoritmo.getExecTime()
                 algoritmo.allocate(page)
                 lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, ptr, True, page, lAddr, -1 ,tim, False]
+                data = [page, pid, True, page, lAddr, -1 ,tim, False]
                 self.addState(page, data)
             elif algoritmo.getRam().isFull() and page not in algoritmo.getRam().getMemory():
                 if 0 in algoritmo.getRam().getMemory():
                     tim = algoritmo.getExecTime()
                     algoritmo.allocate(page)
                     lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, ptr, True, page, lAddr, -1 ,tim, False]
+                    data = [page, pid, True, page, lAddr, -1 ,tim, False]
                     self.addState(page, data)
                 else:
                     tim = algoritmo.getExecTime()
                     algoritmo.allocate(page)
                     lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, ptr, True, page, lAddr, -1 ,tim, False]
+                    data = [page, pid, True, page, lAddr, -1 ,tim, False]
                     self.addState(page, data)
                     # page in disk
                     disk = algoritmo.getDisk().getMemory()
@@ -163,7 +163,7 @@ class MmuAlg:
                 tim = algoritmo.getExecTime()
                 algoritmo.allocate(page)
                 lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, ptr, True, page, lAddr, -1 , tim, False]
+                data = [page, pid, True, page, lAddr, -1 , tim, False]
                 self.addState(page, data)    
             if algoritmo.getMarke() != False:
                 dic = algoritmo.getMarke()
