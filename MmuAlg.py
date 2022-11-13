@@ -97,7 +97,17 @@ class MmuAlg:
         del(tempDic[key])
         self.setState(tempDic)
     
-         
+    def markePage(self, key, isMark):
+        tempDic = self.getState()
+        if key in tempDic:
+            list = tempDic[key]
+            if(isMark == 1):
+                list[6] = True
+            else:
+                list[6] = False  
+            tempDic[key] = list
+            self.setState(tempDic)
+
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():
             pagesList  = []
@@ -153,7 +163,13 @@ class MmuAlg:
                 lAddr = algoritmo.getRam().getMemory().index(page)
                 data = [page, ptr, True, lAddr, -1 , time, False]
                 self.addState(page, data)    
-        
+            if algoritmo.getMarke() != False:
+                dic = algoritmo.getMarke()
+                for page in dic:
+                    self.markePage( page, dic[page])
+                    
+            
+
       
 
     

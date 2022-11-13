@@ -51,6 +51,9 @@ class Random:
     
     def delPag(self, page):
         None
+    
+    def getMarke(self):
+        return False
 
     def allocate(self, newPage):
         self.addExecTime(1)

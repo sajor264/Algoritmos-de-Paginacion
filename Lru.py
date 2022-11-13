@@ -68,6 +68,9 @@ class Lru:
     
     def delPag(self, page):
         None
+    
+    def getMarke(self):
+        return {}
 
     def allocate(self, newPage):
         self.addExecTime(1)

@@ -69,6 +69,9 @@ class SecondChance:
     
     def delPag(self, page):
         None
+    
+    def getMarke(self):
+        return self.getClock()
 
     def allocate(self, newPage):
         self.addExecTime(1)

@@ -100,10 +100,13 @@ class Aging:
         self.setClock(tempDic)
         return pagAging
     
-    def delRegister(sef, pag):
-        dic = sef.getClock()
+    def delRegister(self, pag):
+        dic = self.getClock()
         del(dic[pag])
         self.setClock(dic)
+    
+    def getMarke(self):
+        return False
     
     def allocate(self, newPage):
         self.addExecTime(1)
