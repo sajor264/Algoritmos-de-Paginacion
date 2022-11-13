@@ -98,13 +98,13 @@ class MmuOpt:
             pagesList  = []
             kbSize = bytesSize/1024
             pag = self.incrementId()
-            data = [pag, ptr, False, -1, -1, -1, False]
+            data = [pag, ptr, False,pag, -1, -1, -1, False]
             self.addState(pag, data)
             pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
-                data = [pag, ptr, False, -1, -1, -1, False]
+                data = [pag, ptr, False,pag, -1, -1, -1, False]
                 self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4

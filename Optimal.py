@@ -1,6 +1,5 @@
 from Ram import Ram
 from Disk import Disk
-import time
 
 class Optimal:
 
@@ -74,9 +73,9 @@ class Optimal:
         tempDic = self.getData()
         list = tempDic[key]
         list[2] = True
-        list[3] = lADDR
-        list[4] = -1
-        list[5] = time
+        list[4] = lADDR
+        list[5] = -1
+        list[6] = time
         tempDic[key] = list
         self.setData(tempDic)
 
@@ -84,15 +83,14 @@ class Optimal:
         tempDic = self.getData()
         list = tempDic[key]
         list[2] = False
-        list[3] = -1
-        list[4] = mADDR
-        list[5] = time
+        list[4] = -1
+        list[5] = mADDR
+        list[6] = time
         tempDic[key] = list
         self.setData(tempDic)
     
     def allocateNext(self):
         for page in self.getNextMemCall():
-            time.sleep(1)
             self.addExecTime(1)
             if self.getRam().isFull() and page not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
