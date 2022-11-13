@@ -29,7 +29,7 @@ global seed
 
 
 colors=["#FFFFFF"]
-for i in range(1,30):
+for i in range(1,500):
     r = lambda: random.randint(15,255)
     color='#%02X%02X%02X' % (r(),r(),r())
     while color in colors:
