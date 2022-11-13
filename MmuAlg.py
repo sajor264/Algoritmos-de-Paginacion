@@ -61,6 +61,7 @@ class MmuAlg:
             for page in self.getTable()[pointer]:
                 if page in self.getAlgorithm().getRam().getMemory():
                     self.getAlgorithm().getRam().removePage(page)
+                    self.getAlgorithm().delPag(page)
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
                 self.rmvState(page)

@@ -66,6 +66,9 @@ class SecondChance:
         tempExecTime = self.getExecTime()
         tempExecTime += time
         self.setExecTime(tempExecTime)
+    
+    def delPag(self, page):
+        None
 
     def allocate(self, newPage):
         self.addExecTime(1)
