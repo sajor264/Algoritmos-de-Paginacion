@@ -42,10 +42,19 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*50))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*10))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
+def getData(mmuAlg):
+    data = []
+    return data
+
+def getIDP(ptr):
+    for IDP in processesDic:
+        if ptr in processesDic[IDP]:
+            return IDP
+    return 0
 
 def killProcess(ptr, mmuOpt, mmuAlg):
     del pointersDic[ptr]
@@ -84,7 +93,7 @@ if __name__ == '__main__':
     finished = False
     memCallsCpy = Queue()
     memCallsCpy.setQueue(list(reversed(memCalls.getQueue())).copy())
-    mmuOpt = MmuOpt(memCallsCpy, pointersDic)
+    mmuOpt = MmuOpt(memCallsCpy, pointersDic, processesDic)
     if algorithm == 0:
         mmuAlg = MmuAlg(Lru())
     if algorithm == 1:
@@ -97,7 +106,7 @@ if __name__ == '__main__':
         currentPointer = memCalls.pop()
         #EJECUTAMOS ALGORITMOS
         mmuOpt.execute()
-        mmuAlg.execute(currentPointer, pointersDic[currentPointer])
+        mmuAlg.execute(currentPointer, pointersDic[currentPointer], getIDP(currentPointer))
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
         if(not memCalls.isIn(currentPointer)):
             killProcess(currentPointer, mmuOpt, mmuAlg)
@@ -105,5 +114,28 @@ if __name__ == '__main__':
         if(memCalls.isEmpty()):
             finish(mmuOpt, mmuAlg)
             finished = True
-        time.sleep(1)
+
+        print("\n\n\n")
+        ##print(mmuOpt.getAlgorithm().getExecTime())
+        ##print(mmuAlg.getAlgorithm().getExecTime())
+        # print(mmuOpt.getAlgorithm().getMemCalls().getQueue())
+        #print(mmuOpt.getAlgorithm().getRam().getMemory())
+        #print( " ")
+        #print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        print( "Optimo ")
+        print(mmuOpt.getState())
+        print( " ")
+        # print("------------------------------OPTIMO------------------------------")
+        # print(mmuOpt.getAlgorithm().getRam().getMemory())
+        # print(mmuOpt.getAlgorithm().getDisk().getMemory())
+        # print("-----------------------------ALGORITMO-----------------------------")
+        #print(mmuAlg.getAlgorithm().getRam().getMemory())
+        #print(mmuAlg.getAlgorithm().getDisk().getMemory())
+        print( "Alg ")
+        print(mmuAlg.getState())
+        #print(mmuOpt.getAlgorithm().getExecTime())
+        #print(mmuAlg.getAlgorithm().getExecTime())
+    
+        #time.sleep(0.1)
+        
     print("FINISHED")
