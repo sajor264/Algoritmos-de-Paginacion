@@ -2,6 +2,7 @@ from Lru import Lru
 from Aging import Aging
 from Random import Random
 from SecondChance import SecondChance
+import time
 
 class MmuAlg:
 
@@ -133,24 +134,25 @@ class MmuAlg:
         algoritmo = self.getAlgorithm()
         pagesList  = self.getPages(ptr, bytesSize)
         for page in pagesList:
+            time.sleep(1)
             if page in algoritmo.getRam().getMemory():
-                time = algoritmo.getExecTime()
+                tim = algoritmo.getExecTime()
                 algoritmo.allocate(page)
                 lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, ptr, True, lAddr, -1 ,time, False]
+                data = [page, ptr, True, lAddr, -1 ,tim, False]
                 self.addState(page, data)
             elif algoritmo.getRam().isFull() and page not in algoritmo.getRam().getMemory():
                 if 0 in algoritmo.getRam().getMemory():
-                    time = algoritmo.getExecTime()
+                    tim = algoritmo.getExecTime()
                     algoritmo.allocate(page)
                     lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, ptr, True, lAddr, -1 ,time, False]
+                    data = [page, ptr, True, lAddr, -1 ,tim, False]
                     self.addState(page, data)
                 else:
-                    time = algoritmo.getExecTime()
+                    tim = algoritmo.getExecTime()
                     algoritmo.allocate(page)
                     lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, ptr, True, lAddr, -1 ,time, False]
+                    data = [page, ptr, True, lAddr, -1 ,tim, False]
                     self.addState(page, data)
                     # page in disk
                     disk = algoritmo.getDisk().getMemory()
@@ -158,10 +160,10 @@ class MmuAlg:
                     pos = algoritmo.getDisk().getMemory().index(disk[-1])
                     self.updateStateDisk(disk[-1], pos, timeDisk) 
             else:
-                time = algoritmo.getExecTime()
+                tim = algoritmo.getExecTime()
                 algoritmo.allocate(page)
                 lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, ptr, True, lAddr, -1 , time, False]
+                data = [page, ptr, True, lAddr, -1 , tim, False]
                 self.addState(page, data)    
             if algoritmo.getMarke() != False:
                 dic = algoritmo.getMarke()

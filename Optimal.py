@@ -1,5 +1,6 @@
 from Ram import Ram
 from Disk import Disk
+import time
 
 class Optimal:
 
@@ -91,6 +92,7 @@ class Optimal:
     
     def allocateNext(self):
         for page in self.getNextMemCall():
+            time.sleep(1)
             self.addExecTime(1)
             if self.getRam().isFull() and page not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
