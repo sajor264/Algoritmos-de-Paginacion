@@ -48,6 +48,28 @@ def createProcesses(allProcesses):
 
 def getData(mmuAlg):
     data = []
+    process = []
+    loaded = []
+    unloaded = []
+    dic = mmuAlg.getState()
+    for pag in dic: 
+        list = dic[pag] 
+        if list[1] not in process:
+            process.append(list[1])
+        
+        if list[2] == True:
+            loaded.append(pag)
+        else:
+            unloaded.append(pag)
+    
+    data.append(len( process))
+    data.append(mmuAlg.getAlgorithm().getExecTime())
+    data.append(len(loaded)*4)
+    data.append(len(loaded)*4*100/400)
+    data.append(len(unloaded)*4)
+    data.append(len(unloaded)*4*100/1000)
+    data.append(len(loaded))
+    data.append(len(unloaded))
     return data
 
 def getIDP(ptr):
@@ -123,7 +145,8 @@ if __name__ == '__main__':
         #print( " ")
         #print(mmuOpt.getAlgorithm().getDisk().getMemory())
         print( "Optimo ")
-        print(mmuOpt.getState())
+        #print(mmuOpt.getState())
+        
         print( " ")
         # print("------------------------------OPTIMO------------------------------")
         # print(mmuOpt.getAlgorithm().getRam().getMemory())
@@ -132,7 +155,8 @@ if __name__ == '__main__':
         #print(mmuAlg.getAlgorithm().getRam().getMemory())
         #print(mmuAlg.getAlgorithm().getDisk().getMemory())
         print( "Alg ")
-        print(mmuAlg.getState())
+        print(getData(mmuAlg))
+        #print(mmuAlg.getState())
         #print(mmuOpt.getAlgorithm().getExecTime())
         #print(mmuAlg.getAlgorithm().getExecTime())
     
