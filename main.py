@@ -1,10 +1,7 @@
 import random
 import time
-import numpy as np
-import matplotlib.pyplot as plt
 import copy
 from Queue import Queue
-from matplotlib.lines import Line2D
 from MmuAlg import MmuAlg
 from MmuOpt import MmuOpt
 from Optimal import Optimal
@@ -16,17 +13,14 @@ from SecondChance import SecondChance
 # KEY: PID, VALUE: PROCESS POINTERS
 processesDic = {}
 processes2Remove = {}
-
 # KEY: PTR, VALUE: SIZE
 pointersDic = {}
-
 #ORDEN DE LAS LLAMADAS A MEMORIA
 memCalls = Queue()
 
 
 def readFile(fileName):
     allProcesses = []
-
     file = open(fileName, "r")
     for line in file:
         tempList = []
@@ -34,7 +28,6 @@ def readFile(fileName):
             tempList.append(e.lstrip().rstrip())
         allProcesses.append(tempList)
     file.close()
-
     return allProcesses[1:]
 
 
@@ -49,7 +42,7 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*50))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
@@ -68,6 +61,7 @@ def killProcess(ptr, mmuOpt, mmuAlg):
         tempList.remove(ptr)
         processes2Remove[key] = tempList
 
+
 def finish(mmuOpt, mmuAlg):
     processesDic.clear()
     processes2Remove.clear()
@@ -76,19 +70,15 @@ def finish(mmuOpt, mmuAlg):
     mmuOpt.finish()
 
 
-
-
 if __name__ == '__main__':
     # INPUTS
     fileName = str(input("Nombre del archivo de procesos: "))
     seed = int(input("Semilla: "))
     algorithm = int(input("0) LRU\n1) Second Chance\n2) Aging\n3)Random\nAlgoritmo: "))
-
     # OBTIENE LOS PROCESOS Y LOS BARAJA
     random.seed(seed)
     allProcesses  = readFile(fileName)
     createProcesses(allProcesses)
-
     # VARIABLES
     processes2Remove = copy.deepcopy(processesDic)
     finished = False
@@ -103,36 +93,17 @@ if __name__ == '__main__':
         mmuAlg = MmuAlg(Aging())
     if algorithm == 3:
         mmuAlg = MmuAlg(Random())
-
     while(not finished):
         currentPointer = memCalls.pop()
-
         #EJECUTAMOS ALGORITMOS
         mmuOpt.execute()
         mmuAlg.execute(currentPointer, pointersDic[currentPointer])
-
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
         if(not memCalls.isIn(currentPointer)):
             killProcess(currentPointer, mmuOpt, mmuAlg)
-        
         # VERIFICA SI TERMINARON TODOS LOS PROCESOS
         if(memCalls.isEmpty()):
             finish(mmuOpt, mmuAlg)
             finished = True
-
-        print("\n\n\n")
-        print(mmuOpt.getAlgorithm().getExecTime())
-        print(mmuAlg.getAlgorithm().getExecTime())
-        # print(mmuOpt.getAlgorithm().getMemCalls().getQueue())
-        # print(mmuAlg.getAlgorithm().getRam().getFreeRam())
-        # print(len(mmuOpt.getAlgorithm().getDisk().getMemory()))
-        # print("------------------------------OPTIMO------------------------------")
-        # print(mmuOpt.getAlgorithm().getRam().getMemory())
-        # print(mmuOpt.getAlgorithm().getDisk().getMemory())
-        # print("-----------------------------ALGORITMO-----------------------------")
-        # print(mmuAlg.getAlgorithm().getRam().getMemory())
-        # print(mmuAlg.getAlgorithm().getDisk().getMemory())
-    
-        #time.sleep(0.1)
-        
+        time.sleep(1)
     print("FINISHED")

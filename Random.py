@@ -1,7 +1,6 @@
 import random
 from Ram import Ram
 from Disk import Disk
-import time
 
 class Random:
 

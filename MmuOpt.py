@@ -70,6 +70,7 @@ class MmuOpt:
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
             self.removeFromTable(pointer)
+        self.getAlgorithm().addExecTime(10)
 
     def finish(self):
         tempRam = self.getAlgorithm().getRam().getMemory()

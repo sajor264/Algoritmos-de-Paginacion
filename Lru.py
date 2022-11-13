@@ -1,6 +1,5 @@
 from Ram import Ram
 from Disk import Disk
-import time
 
 class Lru:
 
@@ -73,7 +72,6 @@ class Lru:
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                    #time.sleep(5)
                 self.allocateInRam(newPage)
                 self.addMemoryAccess(newPage)
             else:
@@ -89,7 +87,6 @@ class Lru:
                 self.removeFromRam(marked[0]) 
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                    #time.sleep(5)
                 self.allocateInRam(newPage)
                 self.allocateInDisk(marked[0])
                 self.addMemoryAccess(newPage)

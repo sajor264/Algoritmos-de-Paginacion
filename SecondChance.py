@@ -1,7 +1,5 @@
 from Ram import Ram
 from Disk import Disk
-import time
-from itertools import cycle, islice
 
 class SecondChance:
 
