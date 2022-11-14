@@ -129,9 +129,10 @@ class Lru:
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage, pid)
             self.addMemoryAccess(newPage)
-        data = self.getState()[self.getMarked()]
-        data[7] = False
-        self.addState(self.getMarked(), data)
+        if self.getMarked() in self.getState():
+            data = self.getState()[self.getMarked()]
+            data[7] = False
+            self.addState(self.getMarked(), data)
         memoryAccesses = self.getMemoryAccesses()
         page2Remove = self.getRam().getMemory()[0]
         index = -1
