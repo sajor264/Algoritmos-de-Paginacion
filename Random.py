@@ -105,6 +105,6 @@ class Random:
                     self.removeFromDisk(newPage)
                     #time.sleep(5)
                 self.allocateInRam(newPage, pid)
-                self.allocateInDisk(page2Remove)
+                self.allocateInDisk(page2Remove, pid)
         elif newPage not in self.getRam().getMemory():
                 self.allocateInRam(newPage, pid)
