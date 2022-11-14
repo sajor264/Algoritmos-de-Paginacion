@@ -8,6 +8,7 @@ class Lru:
         self.setDisk(Disk())
         self.setMemoryAccesses([])
         self.setExecTime(0)
+        self.setThrashingTime(0)
         self.setMarked(0)
     
     # GETTERS
@@ -26,6 +27,9 @@ class Lru:
     def getExecTime(self):
         return self.__execTime
 
+    def getThrashingTime(self):
+        return self.__thrashingTime
+
 
     # SETTERS
     def setRam(self, ram):
@@ -43,6 +47,12 @@ class Lru:
     def setExecTime(self, execTime):
         self.__execTime = execTime
 
+    def setRunningTime(self, runningTime):
+        self.__runningTime = runningTime
+
+    def setThrashingTime(self, thrashingTime):
+        self.__thrashingTime = thrashingTime
+
 
     # FUNCTIONS
     def addMemoryAccess(self, page):
@@ -51,21 +61,32 @@ class Lru:
         self.setMemoryAccesses(tempMem)
 
     def removeFromRam(self, page):
+        self.addExecTime(1)
         self.getRam().removePage(page)
 
     def allocateInRam(self, page):
+        self.addExecTime(1)
         self.getRam().allocatePage(page)
 
     def removeFromDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().removePage(page)
 
     def allocateInDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
 
     def addExecTime(self, time):
         tempExecTime = self.getExecTime()
         tempExecTime += time
         self.setExecTime(tempExecTime)
+
+    def addThrashingTime(self, time):
+        tempTime = self.getThrashingTime()
+        tempTime += time
+        self.setThrashingTime(tempTime)
     
     def delPag(self, page):
         None
@@ -79,7 +100,6 @@ class Lru:
         return dic
 
     def allocate(self, newPage):
-        self.addExecTime(1)
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
@@ -102,8 +122,6 @@ class Lru:
                 self.allocateInRam(newPage)
                 self.allocateInDisk(marked[0])
                 self.addMemoryAccess(newPage)
-            self.addExecTime(5)
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.addMemoryAccess(newPage)
-            self.addExecTime(5)

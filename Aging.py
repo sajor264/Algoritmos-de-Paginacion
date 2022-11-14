@@ -8,6 +8,7 @@ class Aging:
         self.setDisk(Disk())
         self.setClock({})
         self.setExecTime(0)
+        self.setThrashingTime(0)
     
     # GETTERS
     def getRam(self):
@@ -22,6 +23,9 @@ class Aging:
     def getExecTime(self):
         return self.__execTime
 
+    def getThrashingTime(self):
+        return self.__thrashingTime
+
     # SETTERS
     def setRam(self, ram):
         self.__ram = ram
@@ -35,6 +39,9 @@ class Aging:
     def setExecTime(self, execTime):
         self.__execTime = execTime
 
+    def setThrashingTime(self, thrashingTime):
+        self.__thrashingTime = thrashingTime
+
     # FUNCTIONS
     def addInClock(self, key, value):
         tempDic = self.getClock()
@@ -42,18 +49,23 @@ class Aging:
         self.setClock(tempDic)
 
     def removeFromRam(self, page):
+        self.addExecTime(1)
         self.getRam().removePage(page)
 
     def allocateInRam(self, page):
+        self.addExecTime(1)
         self.getRam().allocatePage(page)
 
     def removeFromDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().removePage(page)
     
     def allocateInDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
     
-
     def righBits(self): 
         tempDic = self.getClock()
         for var in tempDic:
@@ -78,7 +90,10 @@ class Aging:
         tempExecTime += time
         self.setExecTime(tempExecTime)
     
-    
+    def addThrashingTime(self, time):
+        tempTime = self.getThrashingTime()
+        tempTime += time
+        self.setThrashingTime(tempTime)
     
     def binario_a_decimal(self, numero_binario):
 	    numero_decimal = 0 
@@ -109,7 +124,6 @@ class Aging:
         return False
     
     def allocate(self, newPage):
-        self.addExecTime(1)
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
@@ -124,13 +138,11 @@ class Aging:
                 ## disco
                 self.allocateInRam(newPage)
                 self.addInClock(newPage, "10000000")
-                self.righBits()
-            self.addExecTime(5)       
+                self.righBits()      
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.addInClock(newPage, "10000000")
             self.righBits()
-            self.addExecTime(5)
 
         elif newPage  in self.getRam().getMemory():
             self.pagInRam(newPage)

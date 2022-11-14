@@ -88,8 +88,8 @@ def getData(mmuAlg):
     data.append(len(unloaded)*4*100/1000)
     data.append(len(loaded))
     data.append(len(unloaded))
-    data.append("THRASHING")
-    data.append("THRASHING")
+    data.append(mmuAlg.getAlgorithm().getThrashingTime())
+    data.append(round((mmuAlg.getAlgorithm().getThrashingTime()/mmuAlg.getAlgorithm().getExecTime())*100, 2))
     data.append(mmuAlg.getTotalFrag())
     return data
 

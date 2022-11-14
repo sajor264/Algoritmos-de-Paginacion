@@ -9,6 +9,7 @@ class SecondChance:
         self.setClock({})
         self.setVictim(0)
         self.setExecTime(0)
+        self.setThrashingTime(0)
     
     # GETTERS
     def getRam(self):
@@ -25,6 +26,9 @@ class SecondChance:
 
     def getExecTime(self):
         return self.__execTime
+
+    def getThrashingTime(self):
+        return self.__thrashingTime
 
 
     # SETTERS
@@ -43,18 +47,27 @@ class SecondChance:
     def setExecTime(self, execTime):
         self.__execTime = execTime
 
+    def setThrashingTime(self, thrashingTime):
+        self.__thrashingTime = thrashingTime
+
 
     # FUNCTIONS
     def removeFromRam(self, page):
+        self.addExecTime(1)
         self.getRam().removePage(page)
 
     def allocateInRam(self, page):
+        self.addExecTime(1)
         self.getRam().allocatePage(page)
 
     def removeFromDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().removePage(page)
 
     def allocateInDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
 
     def updateClock(self, key, value):
@@ -66,6 +79,11 @@ class SecondChance:
         tempExecTime = self.getExecTime()
         tempExecTime += time
         self.setExecTime(tempExecTime)
+
+    def addThrashingTime(self, time):
+        tempTime = self.getThrashingTime()
+        tempTime += time
+        self.setThrashingTime(tempTime)
     
     def delPag(self, page):
         None
@@ -74,7 +92,6 @@ class SecondChance:
         return self.getClock()
 
     def allocate(self, newPage):
-        self.addExecTime(1)
         if self.getRam().isFull():
             if newPage not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
@@ -105,10 +122,8 @@ class SecondChance:
                         #time.sleep(5)
                     self.allocateInRam(newPage)
                     self.allocateInDisk(page2Remove)
-                self.addExecTime(5)
             else:
                 self.updateClock(newPage, 1)
         elif newPage not in self.getRam().getMemory():
             self.allocateInRam(newPage)
             self.updateClock(newPage, 1)
-            self.addExecTime(5)

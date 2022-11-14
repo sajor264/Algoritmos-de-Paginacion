@@ -9,6 +9,7 @@ class Optimal:
         self.setDisk(Disk())
         self.setData({})
         self.setExecTime(0)
+        self.setThrashingTime(0)
 
     
     # GETTERS
@@ -27,6 +28,9 @@ class Optimal:
     def getData(self):
         return self.__data
 
+    def getThrashingTime(self):
+        return self.__thrashingTime
+
     # SETTERS
     def setMemCalls(self, memCalls):
         self.__memCalls = memCalls
@@ -42,6 +46,9 @@ class Optimal:
     
     def setData(self,data):
         self.__data = data
+
+    def setThrashingTime(self, thrashingTime):
+        self.__thrashingTime = thrashingTime
     
     
 
@@ -53,21 +60,32 @@ class Optimal:
         return element
 
     def removeFromRam(self, page):
+        self.addExecTime(1)
         self.getRam().removePage(page)
 
     def allocateInRam(self, page):
+        self.addExecTime(1)
         self.getRam().allocatePage(page)
 
     def removeFromDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().removePage(page)
 
     def allocateInDisk(self, page):
+        self.addExecTime(5)
+        self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
 
     def addExecTime(self, time):
         tempExecTime = self.getExecTime()
         tempExecTime += time
         self.setExecTime(tempExecTime)
+
+    def addThrashingTime(self, time):
+        tempTime = self.getThrashingTime()
+        tempTime += time
+        self.setThrashingTime(tempTime)
     
     def updateDataRam(self, key ,lADDR, time):
         tempDic = self.getData()
@@ -91,7 +109,6 @@ class Optimal:
     
     def allocateNext(self):
         for page in self.getNextMemCall():
-            self.addExecTime(1)
             if self.getRam().isFull() and page not in self.getRam().getMemory():
                 if 0 in self.getRam().getMemory():
                     if(page in self.getDisk().getMemory()):
@@ -129,11 +146,9 @@ class Optimal:
                     timeDisk = self.getExecTime() 
                     pos = self.getDisk().getMemory().index(marked[0])
                     self.updateDataDisk(marked[0], pos, timeDisk) 
-                self.addExecTime(5)
             elif page not in self.getRam().getMemory():
                 tim = self.getExecTime()
                 self.allocateInRam(page)
                 lAddr = self.getRam().getMemory().index(page)
                 self.updateDataRam(page, lAddr, tim)
-                self.addExecTime(5)
             
