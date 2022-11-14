@@ -11,6 +11,8 @@ from Random import Random
 from SecondChance import SecondChance
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
+from tkinter import *
+import tkinter as tk
 
 # KEY: PID, VALUE: PROCESS POINTERS
 processesDic = {}
@@ -20,8 +22,14 @@ pointersDic = {}
 #ORDEN DE LAS LLAMADAS A MEMORIA
 memCalls = Queue()
 
+#variables Globales
+global mmuAlg
+global fileName
+global seed
+
+
 colors=["#FFFFFF"]
-for i in range(1,30):
+for i in range(1,500):
     r = lambda: random.randint(15,255)
     color='#%02X%02X%02X' % (r(),r(),r())
     while color in colors:
@@ -52,7 +60,7 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*10))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*2))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
@@ -120,11 +128,79 @@ def updateAlgSlider(val):
     print(val)
 
 
+def lru():
+    global mmuAlg
+    mmuAlg = MmuAlg(Lru())
+    global fileName
+    fileName = entry.get()
+    global seed
+    seed = int(entry2.get())
+    formu.destroy()
+
+
+
+def secondChance():
+    global mmuAlg
+    mmuAlg = MmuAlg(SecondChance())
+    global fileName
+    fileName = entry.get()
+    global seed
+    seed = int(entry2.get())
+    formu.destroy()
+
+
+
+def randomIni():
+    global mmuAlg
+    mmuAlg = MmuAlg(Random())
+    global fileName
+    fileName = entry.get()
+    global seed
+    seed = int(entry2.get())
+    formu.destroy()
+
+
+
+def agingIni():
+    global mmuAlg
+    mmuAlg = MmuAlg(Aging())
+    global fileName
+    fileName = entry.get()
+    global seed
+    seed = int(entry2.get())
+    formu.destroy()
+
+
+
+
 if __name__ == '__main__':
     # INPUTS
     #fileName = str(input("Nombre del archivo de procesos: "))
-    seed = int(input("Semilla: "))
-    algorithm = int(input("0) LRU\n1) Second Chance\n2) Aging\n3)Random\nAlgoritmo: "))
+    formu = Tk()
+    entry = tk.StringVar()
+    entry2 = tk.StringVar()
+
+    ventana = Frame(formu, width=800, height=400)
+    ventana.pack()
+
+    titulo = tk.Label(text="Comparacion de Algortimos de Paginacion", font=("Arial", 18), fg="black",
+                      bg="aliceblue").place(x=5, y=8)
+    lb1 = tk.Label(text="Direccion del Archivo", fg="black", bg="ivory").place(x=10, y=50)
+    texto1 = tk.Entry(font=("Arial", 15), width=50, textvariable=entry).place(x=130, y=50)
+
+    lb2 = tk.Label(text="Seed", fg="black", bg="ivory").place(x=10, y=100)
+    texto2 = tk.Entry(font=("Arial", 15), width=50, textvariable=entry2).place(x=130, y=100)
+
+    boton1 = tk.Button(text="Random", command=randomIni).place(width=100, height=50, x=100, y=140)
+    boton2 = tk.Button(text="Second Chance", command=secondChance).place(width=100, height=50, x=250, y=140)
+    boton3 = tk.Button(text="LRU", command=lru).place(width=100, height=50, x=400, y=140)
+    boton6 = tk.Button(text="Aging", command=agingIni).place(width=100, height=50, x=550, y=140)
+
+    tk.mainloop()
+
+    global mmuAlg
+    global fileName
+    global seed
     # OBTIENE LOS PROCESOS Y LOS BARAJA
     random.seed(seed)
     allProcesses  = readFile('procesos.txt')
@@ -135,14 +211,6 @@ if __name__ == '__main__':
     memCallsCpy = Queue()
     memCallsCpy.setQueue(list(reversed(memCalls.getQueue())).copy())
     mmuOpt = MmuOpt(memCallsCpy, pointersDic, processesDic)
-    if algorithm == 0:
-        mmuAlg = MmuAlg(Lru())
-    if algorithm == 1:
-        mmuAlg = MmuAlg(SecondChance())
-    if algorithm == 2:
-        mmuAlg = MmuAlg(Aging())
-    if algorithm == 3:
-        mmuAlg = MmuAlg(Random())
 
     #SET GRAPH
 
@@ -204,7 +272,7 @@ if __name__ == '__main__':
         if (len(mmuOpt.getState())<25):
             mmuLimitData = len(mmuOpt.getState())  
         cellsOptText = [mmuOpt.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellOptColours = [[colors[int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
         mmuOptTable = ax1.table(cellText=cellsOptText, colLabels=columnsMMU, loc='bottom',cellColours=cellOptColours)
         mmuOptTable.auto_set_font_size(False)
         mmuOptTable.set_fontsize(8)
@@ -214,7 +282,7 @@ if __name__ == '__main__':
         if (len(mmuAlg.getState())<25):
             mmuLimitData = len(mmuAlg.getState())  
         cellsAlgText = [mmuAlg.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellAlgColours = [[colors[int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
         mmuAlgTable = ax2.table(cellText=cellsAlgText, colLabels=columnsMMU, loc='bottom',cellColours=cellAlgColours)
         mmuAlgTable.auto_set_font_size(False)
         mmuAlgTable.set_fontsize(8)
