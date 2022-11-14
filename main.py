@@ -1,3 +1,4 @@
+from math import ceil
 import random
 import time
 import copy
@@ -24,9 +25,13 @@ memCalls = Queue()
 
 #variables Globales
 global mmuAlg
+global mmuOpt
 global fileName
 global seed
-
+global keysAlg
+global pageAlg
+global keysOpt
+global pageOpt
 
 colors=["#FFFFFF"]
 for i in range(1,500):
@@ -122,10 +127,30 @@ def finish(mmuOpt, mmuAlg):
     mmuOpt.finish()
 
 def updateOptSlider(val):
-    print(val)
+    plt.pause(1)
+    dicLen = len(mmuOpt.getState())
+    pages = ceil(dicLen/25)
+    global pageOpt
+    if pages > 1:
+        r = val * 10
+        for x in range(pages):
+            if r >= 10/pages*x and r < 10/pages*(x+1):
+                pageOpt = x
+    else:
+            pageOpt = 0
 
 def updateAlgSlider(val):
-    print(val)
+    plt.pause(1)
+    dicLen = len(mmuAlg.getState())
+    pages = ceil(dicLen/25)
+    global pageAlg
+    if pages > 1:
+        r = val * 10
+        for x in range(pages):
+            if r >= 10/pages*x and r < 10/pages*(x+1):
+                pageAlg = x
+    else:
+            pageAlg = 0
 
 
 def lru():
@@ -198,9 +223,6 @@ if __name__ == '__main__':
 
     tk.mainloop()
 
-    global mmuAlg
-    global fileName
-    global seed
     # OBTIENE LOS PROCESOS Y LOS BARAJA
     random.seed(seed)
     allProcesses  = readFile('procesos.txt')
@@ -216,7 +238,7 @@ if __name__ == '__main__':
 
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
     plt.get_current_fig_manager().resize(2000,2000)
-    plt.subplots_adjust(left=0.01,right=0.99)
+    plt.subplots_adjust(left=0.01,right=0.99, bottom=0.15)
 
     
 
@@ -240,21 +262,22 @@ if __name__ == '__main__':
     plt.gcf().text(0.23, 0.93, "RAM - OPT", fontsize=10)
     plt.gcf().text(0.75, 0.93, "RAM - ALG", fontsize=10)
 
-    plt.gcf().text(0.23, 0.55, "MMU - OPT", fontsize=10)
-    plt.gcf().text(0.75, 0.55, "MMU - ALG", fontsize=10)
+    plt.gcf().text(0.23, 0.58, "MMU - OPT", fontsize=10)
+    plt.gcf().text(0.75, 0.58, "MMU - ALG", fontsize=10)
 
     plt.gcf().text(0.23, 0.76, "Datos - OPT", fontsize=10)
     plt.gcf().text(0.75, 0.76, "Datos - ALG", fontsize=10)
     
 
-    axOpt = plt.axes([0.01, 0.0, 0.4, 0.05])
-    axAlg = plt.axes([0.56, 0.0, 0.4, 0.05])
+    axOpt = plt.axes([0.01, 0.05, 0.05, 0.04])
+    axAlg = plt.axes([0.55, 0.05, 0.05, 0.04])
     sldrOpt = Slider(axOpt, '', 0.0, 1.0, 0.0)
     sldrAlg = Slider(axAlg, '', 0.0, 1.0, 0.0)
     sldrOpt.on_changed(updateOptSlider)
     sldrAlg.on_changed(updateAlgSlider)
 
-
+    pageAlg = 0
+    pageOpt = 0    
     while(not finished):
         currentPointer = memCalls.pop()
         #EJECUTAMOS ALGORITMOS
@@ -268,24 +291,39 @@ if __name__ == '__main__':
         ramAlgTable = ax2.table(loc='top',cellColours=[ramAlgColors])
 
         #GRAFICA TABLAS DE  MMUs
-        keys = list(mmuOpt.getState().keys())
-        keys.sort()
-        if (len(keys)>25):
-            keys=keys[0:25]
 
-        cellsOptText = [mmuOpt.getState().get(x) for x in keys]
-        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in keys]
+
+        keysOpt = list(mmuOpt.getState().keys())
+        keysOpt.sort()
+        if pageOpt != 0:
+            if len(keysOpt)>pageOpt*25:
+                keysOpt = keysOpt[pageOpt*25:25*(pageOpt+1)]
+            else:
+                keysOpt = keysOpt[-25:]
+        else:
+            keysOpt = keysOpt[0:25]
+
+        cellsOptText = [mmuOpt.getState().get(x) for x in keysOpt]
+        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in keysOpt]
         mmuOptTable = ax1.table(cellText=cellsOptText, colLabels=columnsMMU, loc='bottom',cellColours=cellOptColours)
         mmuOptTable.auto_set_font_size(False)
         mmuOptTable.set_fontsize(8)
 
 
-        keys = list(mmuAlg.getState().keys())
-        keys.sort()
-        if (len(keys)>25):
-            keys=keys[0:25]
-        cellsAlgText = [mmuAlg.getState().get(x) for x in keys]
-        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in keys]
+
+
+        keysAlg = list(mmuAlg.getState().keys())
+        keysAlg.sort()
+        if pageAlg != 0:
+            if len(keysAlg)>pageAlg*25:
+                keysAlg = keysAlg[pageAlg*25:25*(pageAlg+1)]
+            else:
+                keysAlg = keysAlg[-25:]
+        else:
+            keysAlg = keysAlg[0:25]
+
+        cellsAlgText = [mmuAlg.getState().get(x) for x in keysAlg]
+        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in keysAlg]
         mmuAlgTable = ax2.table(cellText=cellsAlgText, colLabels=columnsMMU, loc='bottom',cellColours=cellAlgColours)
         mmuAlgTable.auto_set_font_size(False)
         mmuAlgTable.set_fontsize(8)
@@ -304,7 +342,7 @@ if __name__ == '__main__':
 
 
 
-        plt.pause(0.01)
+        plt.pause(0.0000000001)
         #BORRA LA ULTIMAS FIGURAS
         ramOptTable.remove()
         ramAlgTable.remove()
