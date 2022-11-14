@@ -297,7 +297,9 @@ if __name__ == '__main__':
         keysOpt = list(mmuOpt.getState().keys())
         keysOpt.sort()
         if pageOpt != 0:
-            if len(keysOpt)>pageOpt*25:
+            if (sldrOpt.val==1):
+                keysOpt = keysOpt[-25:]
+            elif len(keysOpt)>pageOpt*25:
                 keysOpt = keysOpt[pageOpt*25:25*(pageOpt+1)]
             else:
                 keysOpt = keysOpt[-25:]
