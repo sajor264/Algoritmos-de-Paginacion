@@ -60,7 +60,7 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*2))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*3))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
@@ -268,21 +268,24 @@ if __name__ == '__main__':
         ramAlgTable = ax2.table(loc='top',cellColours=[ramAlgColors])
 
         #GRAFICA TABLAS DE  MMUs
-        mmuLimitData = 25
-        if (len(mmuOpt.getState())<25):
-            mmuLimitData = len(mmuOpt.getState())  
-        cellsOptText = [mmuOpt.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        keys = list(mmuOpt.getState().keys())
+        keys.sort()
+        if (len(keys)>25):
+            keys=keys[0:25]
+
+        cellsOptText = [mmuOpt.getState().get(x) for x in keys]
+        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in keys]
         mmuOptTable = ax1.table(cellText=cellsOptText, colLabels=columnsMMU, loc='bottom',cellColours=cellOptColours)
         mmuOptTable.auto_set_font_size(False)
         mmuOptTable.set_fontsize(8)
 
 
-        mmuLimitData = 25
-        if (len(mmuAlg.getState())<25):
-            mmuLimitData = len(mmuAlg.getState())  
-        cellsAlgText = [mmuAlg.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        keys = list(mmuAlg.getState().keys())
+        keys.sort()
+        if (len(keys)>25):
+            keys=keys[0:25]
+        cellsAlgText = [mmuAlg.getState().get(x) for x in keys]
+        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in keys]
         mmuAlgTable = ax2.table(cellText=cellsAlgText, colLabels=columnsMMU, loc='bottom',cellColours=cellAlgColours)
         mmuAlgTable.auto_set_font_size(False)
         mmuAlgTable.set_fontsize(8)
@@ -301,7 +304,7 @@ if __name__ == '__main__':
 
 
 
-        plt.pause(0.1)
+        plt.pause(0.01)
         #BORRA LA ULTIMAS FIGURAS
         ramOptTable.remove()
         ramAlgTable.remove()
