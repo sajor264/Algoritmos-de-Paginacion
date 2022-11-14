@@ -9,6 +9,7 @@ class Aging:
         self.setClock({})
         self.setExecTime(0)
         self.setThrashingTime(0)
+        self.setState({})
     
     # GETTERS
     def getRam(self):
@@ -26,6 +27,9 @@ class Aging:
     def getThrashingTime(self):
         return self.__thrashingTime
 
+    def getState(self):
+        return self.__state
+
     # SETTERS
     def setRam(self, ram):
         self.__ram = ram
@@ -42,7 +46,20 @@ class Aging:
     def setThrashingTime(self, thrashingTime):
         self.__thrashingTime = thrashingTime
 
+    def setState(self, state):
+        self.__state = state
+
     # FUNCTIONS
+    def addState(self,key,value):
+        tempDic = self.getState()
+        tempDic[key] = value
+        self.setState(tempDic)
+    
+    def rmvState(self, key):
+        tempDic = self.getState()
+        del(tempDic[key])
+        self.setState(tempDic)
+
     def addInClock(self, key, value):
         tempDic = self.getClock()
         tempDic[key] = value
@@ -52,19 +69,23 @@ class Aging:
         self.addExecTime(1)
         self.getRam().removePage(page)
 
-    def allocateInRam(self, page):
+    def allocateInRam(self, page, pid):
         self.addExecTime(1)
         self.getRam().allocatePage(page)
+        data = [page, pid, True, page, self.getRam().getMemory().index(page), -1, self.getExecTime(), False]
+        self.addState(page, data)
 
     def removeFromDisk(self, page):
         self.addExecTime(5)
         self.addThrashingTime(5)
         self.getDisk().removePage(page)
     
-    def allocateInDisk(self, page):
+    def allocateInDisk(self, page, pid):
         self.addExecTime(5)
         self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
+        data = [page, pid, False, page, -1, self.getDisk().getMemory().index(page), self.getExecTime(), False]
+        self.addState(page, data)
     
     def righBits(self): 
         tempDic = self.getClock()
@@ -120,27 +141,24 @@ class Aging:
         del(dic[pag])
         self.setClock(dic)
     
-    def getMarke(self):
-        return False
-    
-    def allocate(self, newPage):
+    def allocate(self, newPage, pid):
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                self.allocateInRam(newPage)
+                self.allocateInRam(newPage, pid)
                 self.addInClock(newPage, "10000000")
                 self.righBits()
             else:
                 pagDisk = self.selectPag()
                 self.removeFromRam(pagDisk)
-                self.allocateInDisk(pagDisk)
+                self.allocateInDisk(pagDisk, pid)
                 ## disco
-                self.allocateInRam(newPage)
+                self.allocateInRam(newPage, pid)
                 self.addInClock(newPage, "10000000")
                 self.righBits()      
         elif newPage not in self.getRam().getMemory():
-            self.allocateInRam(newPage)
+            self.allocateInRam(newPage, pid)
             self.addInClock(newPage, "10000000")
             self.righBits()
 

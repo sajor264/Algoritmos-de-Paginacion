@@ -9,7 +9,8 @@ class Lru:
         self.setMemoryAccesses([])
         self.setExecTime(0)
         self.setThrashingTime(0)
-        self.setMarked(0)
+        self.setMarked(1)
+        self.setState({})
     
     # GETTERS
     def getRam(self):
@@ -29,6 +30,9 @@ class Lru:
 
     def getThrashingTime(self):
         return self.__thrashingTime
+
+    def getState(self):
+        return self.__state
 
 
     # SETTERS
@@ -53,8 +57,21 @@ class Lru:
     def setThrashingTime(self, thrashingTime):
         self.__thrashingTime = thrashingTime
 
+    def setState(self, state):
+        self.__state = state
+
 
     # FUNCTIONS
+    def addState(self,key,value):
+        tempDic = self.getState()
+        tempDic[key] = value
+        self.setState(tempDic)
+    
+    def rmvState(self, key):
+        tempDic = self.getState()
+        del(tempDic[key])
+        self.setState(tempDic)
+
     def addMemoryAccess(self, page):
         tempMem = self.getMemoryAccesses()
         tempMem.insert(0, page)
@@ -64,19 +81,23 @@ class Lru:
         self.addExecTime(1)
         self.getRam().removePage(page)
 
-    def allocateInRam(self, page):
+    def allocateInRam(self, page, pid):
         self.addExecTime(1)
         self.getRam().allocatePage(page)
+        data = [page, pid, True, page, self.getRam().getMemory().index(page), -1, self.getExecTime(), False]
+        self.addState(page, data)
 
     def removeFromDisk(self, page):
         self.addExecTime(5)
         self.addThrashingTime(5)
         self.getDisk().removePage(page)
 
-    def allocateInDisk(self, page):
+    def allocateInDisk(self, page, pid):
         self.addExecTime(5)
         self.addThrashingTime(5)
         self.getDisk().allocatePage(page)
+        data = [page, pid, False, page, -1, self.getDisk().getMemory().index(page), self.getExecTime(), False]
+        self.addState(page, data)
 
     def addExecTime(self, time):
         tempExecTime = self.getExecTime()
@@ -90,38 +111,37 @@ class Lru:
     
     def delPag(self, page):
         None
-    
-    def getMarke(self):
-        dic = {}
-        for pag in self.getRam().getMemory():
-            if(self.getMarked() != pag):
-                dic[pag] = 0
-        dic[self.getMarked()]=1
-        return dic
 
-    def allocate(self, newPage):
+    def allocate(self, newPage, pid):
         if self.getRam().isFull() and newPage not in self.getRam().getMemory():
             if 0 in self.getRam().getMemory():
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                self.allocateInRam(newPage)
+                self.allocateInRam(newPage, pid)
                 self.addMemoryAccess(newPage)
             else:
-                memoryAccesses = self.getMemoryAccesses()
-                page2Remove = self.getRam().getMemory()[0]
-                index = -1
-                marked = [-1, index]
-                for page2Remove in self.getRam().getMemory():
-                    index = memoryAccesses.index(page2Remove)
-                    if index > marked[1]:
-                        marked = [page2Remove, index]
-                self.setMarked(marked[0])
-                self.removeFromRam(marked[0]) 
+                self.removeFromRam(self.getMarked()) 
                 if(newPage in self.getDisk().getMemory()):
                     self.removeFromDisk(newPage)
-                self.allocateInRam(newPage)
-                self.allocateInDisk(marked[0])
+                self.allocateInRam(newPage, pid)
+                self.allocateInDisk(self.getMarked(), pid)
                 self.addMemoryAccess(newPage)
         elif newPage not in self.getRam().getMemory():
-            self.allocateInRam(newPage)
+            self.allocateInRam(newPage, pid)
             self.addMemoryAccess(newPage)
+        data = self.getState()[self.getMarked()]
+        data[7] = False
+        self.addState(self.getMarked(), data)
+        memoryAccesses = self.getMemoryAccesses()
+        page2Remove = self.getRam().getMemory()[0]
+        index = -1
+        marked = [-1, index]
+        for page2Remove in self.getRam().getMemory():
+            if page2Remove != 0:
+                index = memoryAccesses.index(page2Remove)
+                if index > marked[1]:
+                    marked = [page2Remove, index]
+        self.setMarked(marked[0])
+        data = self.getState()[marked[0]]
+        data[7] = True
+        self.addState(marked[0], data)

@@ -281,8 +281,9 @@ if __name__ == '__main__':
     while(not finished):
         currentPointer = memCalls.pop()
         #EJECUTAMOS ALGORITMOS
-        mmuOpt.execute()
+        mmuOpt.execute(getIDP(currentPointer))
         mmuAlg.execute(currentPointer, pointersDic[currentPointer],getIDP(currentPointer))
+        #print(mmuOpt.getState())
         ramOptColors = [colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for x in mmuOpt.getAlgorithm().getRam().getMemory()]
         ramAlgColors = [colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for x in mmuAlg.getAlgorithm().getRam().getMemory()]
 
