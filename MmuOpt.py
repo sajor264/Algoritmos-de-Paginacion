@@ -3,13 +3,12 @@ from Queue import Queue
 
 class MmuOpt:
     def __init__(self, memCalls, pointersDic, process):
-        self.setCurrentId(1)
-        self.setTable({})
         self.setPointersDic(pointersDic)
-        self.setState({})
+        self.setTable({})
+        self.setCurrentId(1)
         self.setFragDic({})
-        self.setProcess(process)
         self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
+        self.setProcess(process)
     
     # GETTERS
     def getCurrentId(self):
@@ -17,9 +16,6 @@ class MmuOpt:
 
     def getTable(self):
         return self.__memory
-
-    def getState(self):
-        return self.__state
     
     def getProcess(self):
         return self.__process
@@ -41,9 +37,6 @@ class MmuOpt:
     def setTable(self, memory):
         self.__memory = memory
 
-    def setState(self, state):
-        self.__state = state
-
     def setAlgorithm(self, algorithm):
         self.__algorithm = algorithm
 
@@ -57,6 +50,9 @@ class MmuOpt:
         self.__fragDic = fragDic
 
     # FUNCTIONS
+    def getState(self):
+        return self.getAlgorithm().getState()
+
     def incrementId(self):
         tempId = self.getCurrentId()
         tempId += 1
@@ -77,12 +73,6 @@ class MmuOpt:
         tempDic = self.getFragDic()
         tempDic[key] = value
         self.setFragDic(tempDic)
-    
-    def getIDP(self, ptr):
-        for IDP in self.getProcess():
-            if ptr in self.getProcess()[IDP]:
-                return IDP
-        return 0
 
     def killProcess(self, pointerList):
         for pointer in pointerList:
@@ -91,7 +81,7 @@ class MmuOpt:
                     self.getAlgorithm().getRam().removePage(page)
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
-                self.rmvState(page)
+                self.getAlgorithm().rmvState(page)
             self.removeFromTable(pointer)
         self.getAlgorithm().addExecTime(10)
 
@@ -104,30 +94,16 @@ class MmuOpt:
         self.getAlgorithm().getDisk().setMemory([])
         self.setTable(tempTable)
 
-    def addState(self,key,value):
-        tempDic = self.getState()
-        tempDic[key] = value
-        self.setState(tempDic)
-    
-    def rmvState(self, key):
-        tempDic = self.getState()
-        del(tempDic[key])
-        self.setState(tempDic)
-
-    def getPages(self, ptr, bytesSize, pid):
+    def getPages(self, ptr, bytesSize):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
         if ptr not in self.getTable():
             pagesList  = []
             kbSize = bytesSize/1024
-            pag = self.incrementId()
-            data = [pag, pid, False,pag, -1, -1, -1, False]
-            self.addState(pag, data)
+            pag = self.incrementId()  
             pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
-                data = [pag, pid, False,pag, -1, -1, -1, False]
-                self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
             frag = abs(kbSize)
@@ -143,18 +119,16 @@ class MmuOpt:
         queue = memCalls
         while(not queue.isEmpty()):
             pointer  = queue.pop()
-            pageCalls.queue(self.getPages(pointer, self.getPointersDic()[pointer], self.getIDP(pointer)))
+            pageCalls.queue(self.getPages(pointer, self.getPointersDic()[pointer]))
         return pageCalls
 
     def getTotalFrag(self):
         totalFrag = 0
         tempDic = self.getFragDic()
         for key in tempDic:
-            totalFrag += tempDic[key]
+            if key in self.getAlgorithm().getRam().getMemory():
+                totalFrag += tempDic[key]
         return totalFrag
 
-    def execute(self):
-        self.getAlgorithm().setData(self.getState())
-        self.getAlgorithm().allocateNext()
-        state = self.getAlgorithm().getData()
-        self.setState(state)
+    def execute(self, pid):
+        self.getAlgorithm().allocateNext(pid)

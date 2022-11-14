@@ -8,7 +8,6 @@ class MmuAlg:
 
     def __init__(self, algorithm):
         self.setCurrentId(1)
-        self.setState({})
         self.setTable({})
         self.setAlgorithm(algorithm)
         self.setFragDic({})
@@ -23,9 +22,6 @@ class MmuAlg:
     def getAlgorithm(self):
         return self.__algorithm  
 
-    def getState(self):
-        return self.__state  
-
     def getFragDic(self):
         return self.__fragDic 
 
@@ -39,15 +35,15 @@ class MmuAlg:
 
     def setAlgorithm(self, algorithm):
         self.__algorithm = algorithm
-    
-    def setState(self, state):
-        self.__state = state
 
     def setFragDic(self, fragDic):
         self.__fragDic = fragDic
 
 
     # FUNCTIONS
+    def getState(self):
+        return self.getAlgorithm().getState()
+
     def incrementId(self):
         tempId = self.getCurrentId()
         tempId += 1
@@ -78,7 +74,7 @@ class MmuAlg:
                     self.getAlgorithm().delPag(page)
                 if page in self.getAlgorithm().getDisk().getMemory():
                     self.getAlgorithm().getDisk().removePage(page)
-                self.rmvState(page)
+                self.getAlgorithm().rmvState(page)
             self.removeFromTable(pointer)
         self.getAlgorithm().addExecTime(10)
 
@@ -91,28 +87,8 @@ class MmuAlg:
         self.getAlgorithm().getDisk().setMemory([])
         self.setTable(tempTable)
     
-    def addState(self, key ,value):
-        tempDic = self.getState()
-        tempDic[key] = value
-        self.setState(tempDic)
-
-    def updateStateDisk(self, key, mADDR, time):
-        tempDic = self.getState()
-        list = tempDic[key]
-        list[2] = False
-        list[4] = -1
-        list[5] = mADDR
-        list[6] = time
-        tempDic[key] = list
-        self.setState(tempDic)
-    
-    def rmvState(self, key):
-        tempDic = self.getState()
-        del(tempDic[key])
-        self.setState(tempDic)
-    
     def markePage(self, key, isMark):
-        tempDic = self.getState()
+        tempDic = self.getAlgorithm().getState()
         if key in tempDic:
             list = tempDic[key]
             if(isMark == 1):
@@ -120,21 +96,17 @@ class MmuAlg:
             else:
                 list[7] = False  
             tempDic[key] = list
-            self.setState(tempDic)
+            self.getAlgorithm().setState(tempDic)
 
     def getPages(self, ptr, bytesSize):
         if ptr not in self.getTable():
             pagesList  = []
             kbSize = bytesSize/1024
             pag = self.incrementId()
-            data = [pag, ptr, False,pag, -1, -1, -1, False]
-            self.addState(pag, data)
             pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
-                data = [pag, ptr, False,pag, -1, -1, -1, False]
-                self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
             frag = abs(kbSize)
@@ -159,39 +131,14 @@ class MmuAlg:
         for page in pagesList:
             time.sleep(0.0000000001)
             if page in algoritmo.getRam().getMemory():
-                tim = algoritmo.getExecTime()
-                algoritmo.allocate(page)
-                lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, pid, True, page, lAddr, -1 ,tim, False]
-                self.addState(page, data)
+                algoritmo.allocate(page, pid)
             elif algoritmo.getRam().isFull() and page not in algoritmo.getRam().getMemory():
                 if 0 in algoritmo.getRam().getMemory():
-                    tim = algoritmo.getExecTime()
-                    algoritmo.allocate(page)
-                    lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, pid, True, page, lAddr, -1 ,tim, False]
-                    self.addState(page, data)
+                    algoritmo.allocate(page, pid)
                 else:
-                    tim = algoritmo.getExecTime()
-                    algoritmo.allocate(page)
-                    lAddr = algoritmo.getRam().getMemory().index(page)
-                    data = [page, pid, True, page, lAddr, -1 ,tim, False]
-                    self.addState(page, data)
-                    # page in disk
-                    disk = algoritmo.getDisk().getMemory()
-                    timeDisk = algoritmo.getExecTime()
-                    pos = algoritmo.getDisk().getMemory().index(disk[-1])
-                    self.updateStateDisk(disk[-1], pos, timeDisk) 
+                    algoritmo.allocate(page, pid)
             else:
-                tim = algoritmo.getExecTime()
-                algoritmo.allocate(page)
-                lAddr = algoritmo.getRam().getMemory().index(page)
-                data = [page, pid, True, page, lAddr, -1 , tim, False]
-                self.addState(page, data)    
-            if algoritmo.getMarke() != False:
-                dic = algoritmo.getMarke()
-                for page in dic:
-                    self.markePage( page, dic[page])
+                algoritmo.allocate(page, pid)
                     
             
 
