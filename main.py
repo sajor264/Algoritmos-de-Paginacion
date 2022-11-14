@@ -213,7 +213,7 @@ if __name__ == '__main__':
     lb1 = tk.Label(text="Direccion del Archivo", fg="black", bg="ivory").place(x=10, y=50)
     texto1 = tk.Entry(font=("Arial", 15), width=50, textvariable=entry).place(x=130, y=50)
 
-    lb2 = tk.Label(text="Seed", fg="black", bg="ivory").place(x=10, y=100)
+    lb2 = tk.Label(text="Semilla", fg="black", bg="ivory").place(x=10, y=100)
     texto2 = tk.Entry(font=("Arial", 15), width=50, textvariable=entry2).place(x=130, y=100)
 
     boton1 = tk.Button(text="Random", command=randomIni).place(width=100, height=50, x=100, y=140)
