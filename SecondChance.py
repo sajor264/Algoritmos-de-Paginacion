@@ -144,9 +144,10 @@ class SecondChance:
             self.allocateInRam(newPage, pid)
             self.updateClock(newPage, 1, pid)
         for key in self.getClock():
-            tempState = self.getState()[key]
-            if self.getClock()[key] == 1:
-                tempState[7] = True
-            else:
-                tempState[7] = False
-            self.addState(key, tempState)
+            if key in self.getState():
+                tempState = self.getState()[key]
+                if self.getClock()[key] == 1:
+                    tempState[7] = True
+                else:
+                    tempState[7] = False
+                self.addState(key, tempState)
