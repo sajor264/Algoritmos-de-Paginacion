@@ -316,7 +316,9 @@ if __name__ == '__main__':
         keysAlg = list(mmuAlg.getState().keys())
         keysAlg.sort()
         if pageAlg != 0:
-            if len(keysAlg)>pageAlg*25:
+            if (sldrAlg.val==1):
+                keysAlg = keysAlg[-25:]
+            elif len(keysAlg)>pageAlg*25:
                 keysAlg = keysAlg[pageAlg*25:25*(pageAlg+1)]
             else:
                 keysAlg = keysAlg[-25:]
