@@ -7,6 +7,7 @@ class MmuOpt:
         self.setTable({})
         self.setPointersDic(pointersDic)
         self.setState({})
+        self.setFragDic({})
         self.setProcess(process)
         self.setAlgorithm(Optimal(self.getPageCalls(memCalls)))
     
@@ -27,8 +28,10 @@ class MmuOpt:
         return self.__algorithm  
 
     def getPointersDic(self):
-        return self.__pointersDic   
+        return self.__pointersDic 
 
+    def getFragDic(self):
+        return self.__fragDic   
 
 
     # SETTERS
@@ -50,6 +53,9 @@ class MmuOpt:
     def setProcess(self, process):
         self.__process = process
 
+    def setFragDic(self, fragDic):
+        self.__fragDic = fragDic
+
     # FUNCTIONS
     def incrementId(self):
         tempId = self.getCurrentId()
@@ -66,6 +72,11 @@ class MmuOpt:
         tempDic = self.getTable()
         del tempDic[key]
         self.setTable(tempDic)
+
+    def updateFragDic(self, key, value):
+        tempDic = self.getFragDic()
+        tempDic[key] = value
+        self.setFragDic(tempDic)
     
     def getIDP(self, ptr):
         for IDP in self.getProcess():
@@ -119,6 +130,9 @@ class MmuOpt:
                 self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
+            frag = abs(kbSize)
+            if frag != 0:
+                self.updateFragDic(pag, frag)
             self.addInTable(ptr, pagesList)
             return pagesList
         else:
@@ -131,6 +145,13 @@ class MmuOpt:
             pointer  = queue.pop()
             pageCalls.queue(self.getPages(pointer, self.getPointersDic()[pointer], self.getIDP(pointer)))
         return pageCalls
+
+    def getTotalFrag(self):
+        totalFrag = 0
+        tempDic = self.getFragDic()
+        for key in tempDic:
+            totalFrag += tempDic[key]
+        return totalFrag
 
     def execute(self):
         self.getAlgorithm().setData(self.getState())

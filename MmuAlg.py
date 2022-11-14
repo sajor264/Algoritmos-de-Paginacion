@@ -11,6 +11,7 @@ class MmuAlg:
         self.setState({})
         self.setTable({})
         self.setAlgorithm(algorithm)
+        self.setFragDic({})
     
     # GETTERS
     def getCurrentId(self):
@@ -25,6 +26,9 @@ class MmuAlg:
     def getState(self):
         return self.__state  
 
+    def getFragDic(self):
+        return self.__fragDic 
+
 
     # SETTERS
     def setCurrentId(self, id):
@@ -38,6 +42,9 @@ class MmuAlg:
     
     def setState(self, state):
         self.__state = state
+
+    def setFragDic(self, fragDic):
+        self.__fragDic = fragDic
 
 
     # FUNCTIONS
@@ -57,9 +64,15 @@ class MmuAlg:
         del tempDic[key]
         self.setTable(tempDic)
 
+    def updateFragDic(self, key, value):
+        tempDic = self.getFragDic()
+        tempDic[key] = value
+        self.setFragDic(tempDic)
+
     def killProcess(self, pointerList):
         for pointer in pointerList:
             for page in self.getTable()[pointer]:
+                self.updateFragDic(page, 0)
                 if page in self.getAlgorithm().getRam().getMemory():
                     self.getAlgorithm().getRam().removePage(page)
                     self.getAlgorithm().delPag(page)
@@ -116,7 +129,7 @@ class MmuAlg:
             pag = self.incrementId()
             data = [pag, ptr, False,pag, -1, -1, -1, False]
             self.addState(pag, data)
-            pagesList.append(pag )
+            pagesList.append(pag)
             kbSize -= 4
             while(kbSize > 4):
                 pag = self.incrementId()
@@ -124,17 +137,27 @@ class MmuAlg:
                 self.addState(pag, data)
                 pagesList.append(pag)
                 kbSize -= 4
+            frag = abs(kbSize)
+            if frag != 0:
+                self.updateFragDic(pag, frag)
             self.addInTable(ptr, pagesList)
             return pagesList
         else:
             return self.getTable()[ptr]
+
+    def getTotalFrag(self):
+        totalFrag = 0
+        tempDic = self.getFragDic()
+        for key in tempDic:
+            totalFrag += tempDic[key]
+        return totalFrag
     
     def execute(self, ptr, bytesSize, pid):
         # data [PageID, PTR, LOADED, L-ADDR, M-ADDR, LOADED-T, MARK]
         algoritmo = self.getAlgorithm()
         pagesList  = self.getPages(ptr, bytesSize)
         for page in pagesList:
-            time.sleep(1)
+            time.sleep(0.0000000001)
             if page in algoritmo.getRam().getMemory():
                 tim = algoritmo.getExecTime()
                 algoritmo.allocate(page)

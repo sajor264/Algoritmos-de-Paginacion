@@ -80,6 +80,9 @@ def getData(mmuAlg):
     data.append(len(unloaded)*4*100/1000)
     data.append(len(loaded))
     data.append(len(unloaded))
+    data.append("THRASHING")
+    data.append("THRASHING")
+    data.append(mmuAlg.getTotalFrag())
     return data
 
 def getIDP(ptr):
