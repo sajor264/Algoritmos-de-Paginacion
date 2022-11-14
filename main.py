@@ -60,7 +60,7 @@ def createProcesses(allProcesses):
             processesDic[process[0]] = tempList
         else:
             processesDic[process[0]] = [process[1]]
-    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*10))
+    tempMemCalls.extend(random.choices(tempMemCalls, k=len(tempMemCalls)*2))
     random.shuffle(tempMemCalls)
     memCalls.setQueue(tempMemCalls)
 
@@ -269,7 +269,7 @@ if __name__ == '__main__':
         if (len(mmuOpt.getState())<25):
             mmuLimitData = len(mmuOpt.getState())  
         cellsOptText = [mmuOpt.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellOptColours = [[colors[int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        cellOptColours = [[colors[0 if x==0 else int(mmuOpt.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
         mmuOptTable = ax1.table(cellText=cellsOptText, colLabels=columnsMMU, loc='bottom',cellColours=cellOptColours)
         mmuOptTable.auto_set_font_size(False)
         mmuOptTable.set_fontsize(8)
@@ -279,7 +279,7 @@ if __name__ == '__main__':
         if (len(mmuAlg.getState())<25):
             mmuLimitData = len(mmuAlg.getState())  
         cellsAlgText = [mmuAlg.getState().get(x) for x in range(1,mmuLimitData+1)]
-        cellAlgColours = [[colors[int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
+        cellAlgColours = [[colors[0 if x==0 else int(mmuAlg.getState().get(x)[1])] for i in range(8)] for x in range(1,mmuLimitData+1)]
         mmuAlgTable = ax2.table(cellText=cellsAlgText, colLabels=columnsMMU, loc='bottom',cellColours=cellAlgColours)
         mmuAlgTable.auto_set_font_size(False)
         mmuAlgTable.set_fontsize(8)
