@@ -127,7 +127,7 @@ def finish(mmuOpt, mmuAlg):
     mmuOpt.finish()
 
 def updateOptSlider(val):
-    plt.pause(1)
+    plt.pause(0.1)
     dicLen = len(mmuOpt.getState())
     pages = ceil(dicLen/25)
     global pageOpt
@@ -140,7 +140,7 @@ def updateOptSlider(val):
             pageOpt = 0
 
 def updateAlgSlider(val):
-    plt.pause(1)
+    plt.pause(0.1)
     dicLen = len(mmuAlg.getState())
     pages = ceil(dicLen/25)
     global pageAlg
@@ -345,12 +345,13 @@ if __name__ == '__main__':
 
         plt.pause(0.0000000001)
         #BORRA LA ULTIMAS FIGURAS
-        ramOptTable.remove()
-        ramAlgTable.remove()
-        mmuOptTable.remove()
-        mmuAlgTable.remove()
-        dataOptTable.remove()    
-        dataAlgTable.remove()    
+        if(not memCalls.isEmpty()):
+            ramOptTable.remove()
+            ramAlgTable.remove()
+            mmuOptTable.remove()
+            mmuAlgTable.remove()
+            dataOptTable.remove()    
+            dataAlgTable.remove()    
 
         # VERIFICA SI TERMINO EL PROCESO ACUTAL
         if(not memCalls.isIn(currentPointer)):
